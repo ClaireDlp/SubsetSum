@@ -3,9 +3,14 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define WORD_SIZE 64 // valeur de n
+
 typedef short bool;
 #define true 1
 #define false 0
+
+//stocker des chaînes de n bits.
+typedef long unsigned word;
 
 bool choixDeA(){
     short rep = 1;
@@ -45,14 +50,14 @@ int generationAleaA(int* ai){
 
     for(int i = 0; i<n; ++i){
         //%(max-min+1) + min;
-        ai[i] = rand()%16;//(INT64_MAX);
+        ai[i] = rand()%(1<<n);//(INT64_MAX);
     }
     afficherA(ai,n);
     return n;
 }
 
 
-int puissance(int a, int b){
+int puissance(int a, int b){ // Claire: Inutile. 2**n : (1 << n)
     if(b==0){
         return 1;
     }
