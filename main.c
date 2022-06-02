@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define WORD_SIZE 64 // valeur de n
+#define WORD_SIZE 32 // valeur de n
 
 typedef short bool;
 #define true 1
@@ -24,82 +24,69 @@ bool choixDeA(){
     }
 }
 
-int choixDeN(){
-    int n = 8;
-    printf("\nCombien d'éléments dans a souhaitez vous ? Attention la valeur saisie doit être une puissance de 2 et >= 8\n");
-    scanf("%d",&n);
-    if(round(log2(n)) != log2(n) && n >=8){ //8 ou 4 ? 
-        return choixDeN();
-    }
-    return n;
-}
+// int choixDeN(){
+//     int n = 8;
+//     printf("\nCombien d'éléments dans a souhaitez vous ? Attention la valeur saisie doit être une puissance de 2 et >= 8\n");
+//     scanf("%d",&n);
+//     if(round(log2(n)) != log2(n) && n >=8){ //8 ou 4 ? 
+//         return choixDeN();
+//     }
+//     return n;
+// }
 
-void afficherA(int* ai, int n){
+void afficherA(word* ai){
     printf("\na = (");
-    for(int i = 0; i<n-1; ++i){
-        printf("%d,",ai[i]);
+    for(int i = 0; i<WORD_SIZE-1; ++i){
+        printf("%lu,",ai[i]);
     }
-    printf("%d)",ai[n-1]);
+    printf("%lu)",ai[WORD_SIZE-1]);
 }
 
-int generationAleaA(int* ai){
+void generationAleaA(word* ai){
     srand(time(NULL));
-    int n = choixDeN();
+    //int n = choixDeN();
+    ai = (word*) malloc(sizeof(word)*WORD_SIZE);
 
-    ai = (int*) malloc(sizeof(int)*n);
-
-    for(int i = 0; i<n; ++i){
+    for(word i = 0; i<WORD_SIZE; ++i){
         //%(max-min+1) + min;
-        ai[i] = rand()%(1<<n);//(INT64_MAX);
+        ai[i] = rand()%(word)(1ULL<<WORD_SIZE);
     }
-    afficherA(ai,n);
-    return n;
+    afficherA(ai);
 }
 
-
-int puissance(int a, int b){ // Claire: Inutile. 2**n : (1 << n)
-    if(b==0){
-        return 1;
-    }
-    else{
-        return a * puissance(a, b-1);
-    }
-}
-
-void Algo1(int* ai, int s, int* T1S, int* T2S, int* T3S, int* T4S, int* T1x, int* T2x, int* T3x, int* T4x, int tailleTableau, int n){
-    for(int i = 0; i<n/4; ++i){
+void Algo1(int* ai, int s, int* T1S, int* T2S, int* T3S, int* T4S, int* T1x, int* T2x, int* T3x, int* T4x, int tailleTableau){
+    for(int i = 0; i<WORD_SIZE/4; ++i){
 
     }
 }
 
 int main(){
-    int* ai = NULL;
+    word* ai = NULL;
     bool choixDefDeA = true;
-    int n;
 
     choixDefDeA = choixDeA();
     if(choixDefDeA){
-        n = generationAleaA(ai);
+        generationAleaA(ai);
     }
     else{
         //generationManuel();
     }
 
     //ALORITHME 1
-    int* xi = NULL;
+    word* xi = NULL;
     
-    int tailleTableau = puissance(2,n)/4;
+    word tailleTableauS = WORD_SIZE/4;
+    word tailleTableaux = (1<<(tailleTableauS));
 
-    int T1S[tailleTableau];
-    int T2S[tailleTableau];
+    word T1S[tailleTableauS];
+    word T2S[tailleTableauS];
+    word T3S[tailleTableauS];
+    word T4S[tailleTableauS];
 
-    int T3S[tailleTableau];
-    int T4S[tailleTableau];
-
-    int T1x[tailleTableau*2];
-    int T2x[tailleTableau*2];
-    int T3x[tailleTableau*2];
-    int T4x[tailleTableau*2];
+    word T1x[tailleTableaux];
+    word T2x[tailleTableaux];
+    word T3x[tailleTableaux];
+    word T4x[tailleTableaux];
 
 
 }
