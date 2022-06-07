@@ -15,6 +15,7 @@ typedef short bool;
 typedef long unsigned word;
 
 
+
 //Fonction qui permet de selectionner le mode de génération des éléments du vecteur a
 bool choixDeA(){
     short rep = 1;
@@ -43,7 +44,7 @@ void generationAleaA(word* ai){
     //int n = choixDeN();
     for(word i = 0; i<WORD_SIZE; ++i){
         //%(max-min+1) + min;
-        ai[i] = rand()%(word)(1ULL<<WORD_SIZE);
+        ai[i] = rand()%(word)(1<<WORD_SIZE);
     }
     afficherA(ai);
 }
