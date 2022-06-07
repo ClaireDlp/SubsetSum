@@ -13,6 +13,24 @@ typedef short bool;
 
 //stocker des chaînes de n bits.
 typedef long unsigned word;
+//Claire: type grand entier mpz_t
+
+//lien doc: https://gmplib.org/gmp-man-6.2.1.pdf
+
+//Initialiser un entier a à 0 avec n bits: mpz_init2(a, n)
+//En fin de programme: libération de mémoire: mpz_clear(a)
+//Affecter une valeur aléatoire à a: mpz_set(a,rand()%(word)(1<<WORD_SIZE))
+//Ajouter deux entiers a= a1+a2: mpz_add (a, a1, a2)
+//réduction modulaire a mod 1<<n: mpz_mod(a,a, 1<<n)
+
+//Opérations binaires: https://gmplib.org/manual/Integer-Logic-and-Bit-Fiddling
+//a= b&c : mpz_and (a, b, c)
+//a =b^c mpz_xor (a, b, c)
+
+//A re-tester:
+//donne le nombre à gauche? mp_bitcnt_t mpz_scan1 (const mpz_t op, mp_bitcnt_t starting_bit)
+//void mpz_setbit (mpz_t rop, mp_bitcnt_t bit_index): rop= 1<<(bit_index)? 
+
 
 
 //Fonction qui permet de selectionner le mode de génération des éléments du vecteur a
@@ -158,7 +176,7 @@ void CreationT(word* TS, word* TX, word* ai, word place){
     for(word i = 0;i<(1<<(WORD_SIZE/4));++i){
         if(n!=0){
             //On cherche l'actuel code de gray associé à l'entier i
-            n = gray(i,nprec);
+            n = gray(i,nprec); //Claire: Mettre à jour le tableau dans la fonction Gray_tableau
             //On cherche l'information de quel bit a changé entre l'actuel représentation de gray, et l'ancienne (boucle précédente)
             bitChangement = n ^ nprec;
 
