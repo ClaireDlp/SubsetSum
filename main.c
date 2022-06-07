@@ -5,7 +5,7 @@
 #include <gmp.h>
 
 // valeur de la taille de n
-#define WORD_SIZE 16
+#define WORD_SIZE 8
 
 typedef short bool;
 #define true 1
@@ -232,7 +232,6 @@ int main(){
     word T3x[tailleTableaux];
     word T4x[tailleTableaux];
 
-    //Algo1(ai,10,T,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
-    printf("\n%lu",emplacementBit(4));
+    Algo1(ai,10,T,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
 
 }
