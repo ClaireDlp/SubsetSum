@@ -12,10 +12,16 @@ typedef short bool;
 #define false 0
 
 //stocker des chaînes de n bits.
-typedef long unsigned word;
+
+
+//typedef long unsigned word;
+typedef mpz_t word;
 //Claire: type grand entier mpz_t
 
+
 //lien doc: https://gmplib.org/gmp-man-6.2.1.pdf
+
+
 
 //Initialiser un entier a à 0 avec n bits: mpz_init2(a, n)
 //En fin de programme: libération de mémoire: mpz_clear(a)
@@ -33,8 +39,13 @@ typedef long unsigned word;
 
 
 
+// mpz_init_set_ui   Initialisation et declaration
+// 
 
-//Fonction qui permet de selectionner le mode de génération des éléments du vecteur a
+
+
+
+// //Fonction qui permet de selectionner le mode de génération des éléments du vecteur a
 bool choixDeA(){
     short rep = 1;
     printf("Que souhaitez vous pour a :\n\t1: le générer aléatoirement\n\t2: le générer manuellement\n");
@@ -47,22 +58,22 @@ bool choixDeA(){
     }
 }
 
-//Fonction qui permet d'afficher les éléments du vecteur a
+// //Fonction qui permet d'afficher les éléments du vecteur a
 void afficherA(word* ai){
     printf("\na = (");
     for(int i = 0; i<WORD_SIZE-1; ++i){
-        printf("%lu,",ai[i]);
+        gmp_printf("%Zd,",ai[i]);
     }
-    printf("%lu)",ai[WORD_SIZE-1]);
+    gmp_printf("%Zd)",ai[WORD_SIZE-1]);
 }
 
-//Fonction qui permet de générer de façon aléatoire les éléments du vecteur a
+// //Fonction qui permet de générer de façon aléatoire les éléments du vecteur a
 void generationAleaA(word* ai){
     srand(time(NULL));
     //int n = choixDeN();
-    for(word i = 0; i<WORD_SIZE; ++i){
-        //%(max-min+1) + min;
-        ai[i] = rand()%(word)(1<<WORD_SIZE);
+    for(int i = 0; i<WORD_SIZE; ++i){
+        //A REVOIR
+        mpz_set_ui(ai[i],rand() % (1<<WORD_SIZE));
     }
     afficherA(ai);
 }
@@ -127,9 +138,9 @@ void generationAleaA(word* ai){
 // }
 
 //Fonction qui permet de chercher le nombre de bit à 0 à gauche du dernier bit à 1, et retourne ce résultat + 1
-int nombreDe0gauche(int n){
-    int i = 0;
-    int temp = 0;
+unsigned long long nombreDe0gauche(unsigned long long n){
+    unsigned long long i = 0;
+    unsigned long long temp = 0;
     if(n!=0){
         while(temp==0){
             temp = n & (1<<i);
@@ -143,9 +154,9 @@ int nombreDe0gauche(int n){
 }
 
 //Fonction qui renvoie le nombre de gray correspondant à partir, d'un nombre entier correspondant au code de gray associé, et le code de gray correcpondant à l'entier associé n-1
-int gray(int n, int grayprec){
-    int Nb0 = nombreDe0gauche(n);
-    int temp = grayprec >> (Nb0-1);
+unsigned long long gray(unsigned long long n, unsigned long long grayprec){
+    unsigned long long Nb0 = nombreDe0gauche(n);
+    unsigned long long temp = grayprec >> (Nb0-1);
     if(temp % 2 == 0){
         return grayprec+=(1<<(Nb0-1));
     }
@@ -160,21 +171,22 @@ int gray(int n, int grayprec){
 //Fonction qui renvoie l'emplacement du bit dans la variable "bit"
 //La variable "bit" contiendra uniquement une valeur composé dans sa forme binaire d'un seul bit à 1
 //Renvoie 3 si bit = (0000100)2
-word emplacementBit(word bit){
-    int r=0;
+unsigned long long emplacementBit(unsigned long long bit){
+    unsigned long long r=0;
     while(bit!=0){
-        bit = bit/2;
+        bit = bit / 2;
         r++;
     }
     return r;
 }
 
-void CreationT(word* TS, word* TX, word* ai, word place){
-    word n = 0, nprec = 0, bitChangement = 0;
-    TX[0]=0;
 
-    word indice = 0;
-    for(word i = 0;i<(1<<(WORD_SIZE/4));++i){
+void CreationT(word* TS, unsigned long long* TX, word* ai, unsigned long long place){
+    unsigned long long n = 0, nprec = 0, bitChangement = 0, indice = 0;
+    TX[0]=0;
+    //mpz_set_ui(TX[indice],0);
+
+    for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
         if(n!=0){
             //On cherche l'actuel code de gray associé à l'entier i
             n = gray(i,nprec); //Claire: Mettre à jour le tableau dans la fonction Gray_tableau
@@ -186,40 +198,65 @@ void CreationT(word* TS, word* TX, word* ai, word place){
 
             //Condition permettant de savoir s'il faut ajouter ou soustraire 
             if(nprec < n){
-                TS[indice]= TS[indice-1] + ai[bitChangement-1+place];
-                TX[indice] = n;
-                printf("\n n : %lu  nprec: %lu BIT : +%lu ",n,nprec,bitChangement);
+                //TS[indice]= TS[indice-1] +ai[bitChangement-1+place];
+                mpz_add(TS[indice],TS[indice-1],ai[bitChangement-1+place]);
+                //TX[indice] = n;
+
+                printf("\n n : %llu  nprec: %llu BIT : +%llu ",n,nprec,bitChangement);
             }
             else{
-                TS[indice]= TS[indice-1] - ai[bitChangement-1+place];
-                TX[indice] = n;
-                printf("\n n : %lu  nprec: %lu BIT : -%lu",n,nprec,bitChangement);
+                mpz_sub(TS[indice],TS[indice-1],ai[bitChangement-1+place]);
+                //TX[indice] = n;
+                printf("\n n : %llu  nprec: %llu BIT : -%llu",n,nprec,bitChangement);
             }
             nprec = n;
         }
         else{
-            TS[indice] = 0; // indice = 0
-            TX[indice] = 0;
+            mpz_set_ui(TS[indice],0);// indice = 0
+            //mpz_set_ui(TX[indice],0);// indice = 0
+            TX[0]=0;
             n=1;
         }
         indice++;
     }
     //affichage
-    for(word i = 0;i<(1<<(WORD_SIZE/4));++i){
-        printf("\nTS[%lu]=%lu TX[%lu]=%lu",i,TS[i],i,TX[i]);
+    for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
+        //printf("\nTS[%llu]=%Zd TX[%llu]=%llu",i,TS[i],i,TX[i]);
+        gmp_printf("\n%Zd",TS[i]);
     }
 }
 
-void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S, word* T1x, word* T2x, word* T3x, word* T4x){
+void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S, unsigned long long* T1x, unsigned long long* T2x, unsigned long long* T3x, unsigned long long* T4x){
     CreationT(T1S,T1x,ai,0);
     CreationT(T2S,T2x,ai,WORD_SIZE/4);
     CreationT(T3S,T3x,ai,WORD_SIZE/2);
     CreationT(T4S,T4x,ai,3*(WORD_SIZE/4));
 }
 
+
 int main(){
+
+    //lien doc: https://gmplib.org/gmp-man-6.2.1.pdf
+
+    //Initialiser un entier a à 0 avec n bits: mpz_init2(a, n)
+    //En fin de programme: libération de mémoire: mpz_clear(a)
+    //Affecter une valeur aléatoire à a: mpz_set(a,rand()%(word)(1<<WORD_SIZE))
+    //Ajouter deux entiers a= a1+a2: mpz_add (a, a1, a2)
+    //réduction modulaire a mod 1<<n: mpz_mod(a,a, 1<<n)
+
+    //Opérations binaires: https://gmplib.org/manual/Integer-Logic-and-Bit-Fiddling
+    //a= b&c : mpz_and (a, b, c)
+    //a =b^c mpz_xor (a, b, c)
+    
+
+
+
     //On crée le tableau qui contiendra les éléments du vecteur a
     word ai[WORD_SIZE];
+    for(int i=0;i<WORD_SIZE;++i){
+        mpz_init(ai[i]);
+    }
+
 
     //On génére les éléments du vecteur a
     bool choixDefDeA = true;
@@ -232,25 +269,69 @@ int main(){
         //generationManuel();
     }
 
-    //ALORITHME 1
-    word* xi = NULL;
-    
-    word tailleTableauS = (1<<(WORD_SIZE/4));
 
-    word tailleTableaux = (tailleTableauS*(WORD_SIZE/4));
+    //ALORITHME 1
+    //word* xi = NULL; ????????
+    
+    unsigned long long tailleTableauS = (1<<(WORD_SIZE/4));
+    // word tailleTableauS;
+    // mpz_init(tailleTableauS);
+    // mpz_set_ui(tailleTableauS,1);
+    // mpz_mul_2exp(tailleTableauS,tailleTableauS,WORD_SIZE/4);
+
+
+    unsigned long long tailleTableaux = (tailleTableauS*(WORD_SIZE/4));
+    // word tailleTableaux;
+    // mpz_init(tailleTableaux);
+    // mpz_mul_ui(tailleTableaux,tailleTableauS,WORD_SIZE/4);
+
 
     word T[tailleTableauS*4];
+    for(int i=0;i<tailleTableauS*4;++i){
+        mpz_init(T[i]); //DE même pour l'incrémaentation des ints...
+    }
+    // word tailleTableauS4;
+    // mpz_init(tailleTableauS4);
+    // mpz_mul_ui(tailleTableauS4,tailleTableauS,4);
+    // word T[tailleTableauS4];
+    // word i;
+    // mpz_init(i);
+    // for(mpz_set_ui(i,0);mpz_cmp(i,tailleTableauS4);mpz_add_ui(i,i,1)){
+    //     mpz_init(T[i]);
+    // }
+
 
     word T1S[tailleTableauS];
     word T2S[tailleTableauS];
     word T3S[tailleTableauS];
     word T4S[tailleTableauS];
+    for(int i=0;i<tailleTableauS;++i){
+        mpz_init(T1S[i]);
+        mpz_init(T2S[i]);
+        mpz_init(T3S[i]);
+        mpz_init(T4S[i]);
+    }
 
-    word T1x[tailleTableaux];
-    word T2x[tailleTableaux];
-    word T3x[tailleTableaux];
-    word T4x[tailleTableaux];
+    unsigned long long T1x[tailleTableaux];
+    unsigned long long T2x[tailleTableaux];
+    unsigned long long T3x[tailleTableaux];
+    unsigned long long T4x[tailleTableaux];
+    // for(int i=0;i<tailleTableauS;++i){
+    //     mpz_init(T1x[i]);
+    //     mpz_init(T2x[i]);
+    //     mpz_init(T3x[i]);
+    //     mpz_init(T4x[i]);
+    // }
 
-    Algo1(ai,10,T,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
 
+    word s;
+    mpz_init(s);
+    mpz_set_ui(s,10);
+
+    Algo1(ai,s,T,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
+
+    //Dans une fonction
+    for(int i=0;i<WORD_SIZE;++i){
+        mpz_clear(ai[i]);
+    }
 }
