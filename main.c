@@ -16,7 +16,14 @@ typedef short bool;
 
 //typedef long unsigned word;
 typedef mpz_t word;
-//Claire: type grand entier mpz_t
+
+
+typedef struct{
+    unsigned long long n;
+    unsigned long long nPrec;
+    unsigned long long bitChangement;
+    unsigned long long signe;
+} graytab;
 
 
 //lien doc: https://gmplib.org/gmp-man-6.2.1.pdf
@@ -120,7 +127,7 @@ void generationAleaA(word* ai){
 // }
 
 
-// //Fonction qui retourne le code de gray d'un indice nb donné
+// //Fonction qui retourne le code de gray d'un i nb donné
 // word gray(word nb){
 //     int nb1 = nombreDe1(nb,0);
 //     if(nb1 % 2 == 0){
@@ -154,72 +161,82 @@ unsigned long long nombreDe0gauche(unsigned long long n){
 }
 
 //Fonction qui renvoie le nombre de gray correspondant à partir, d'un nombre entier correspondant au code de gray associé, et le code de gray correcpondant à l'entier associé n-1
-unsigned long long gray(unsigned long long n, unsigned long long grayprec){
+graytab gray(unsigned long long n, graytab tab){
     unsigned long long Nb0 = nombreDe0gauche(n);
-    unsigned long long temp = grayprec >> (Nb0-1);
+    unsigned long long temp = tab.nPrec >> (Nb0-1);
     if(temp % 2 == 0){
-        return grayprec+=(1<<(Nb0-1));
+        tab.n = tab.nPrec+(1<<(Nb0-1));
+        tab.signe = 0;
     }
     else{
-        return grayprec-=(1<<(Nb0-1));
+        tab.n = tab.nPrec-(1<<(Nb0-1));
+        tab.signe = 1;
     }
+    tab.bitChangement = Nb0;
+    return tab;
 }
 
 //-------------------------------------------------------------------------
 
 
-//Fonction qui renvoie l'emplacement du bit dans la variable "bit"
-//La variable "bit" contiendra uniquement une valeur composé dans sa forme binaire d'un seul bit à 1
-//Renvoie 3 si bit = (0000100)2
-unsigned long long emplacementBit(unsigned long long bit){
-    unsigned long long r=0;
-    while(bit!=0){
-        bit = bit / 2;
-        r++;
-    }
-    return r;
-}
+// //Fonction qui renvoie l'emplacement du bit dans la variable "bit"
+// //La variable "bit" contiendra uniquement une valeur composé dans sa forme binaire d'un seul bit à 1
+// //Renvoie 3 si bit = (0000100)2
+// unsigned long long emplacementBit(unsigned long long bit){
+//     unsigned long long r=0;
+//     while(bit!=0){
+//         bit = bit / 2;
+//         r++;
+//     }
+//     return r;
+// }
 
 
 void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
-    unsigned long long n = 0, nprec = 0, bitChangement = 0, indice = 0;
+
+    graytab tab; // n, nprec et bitchangement et pos ou neg
+    tab.n = 0;
+    tab.nPrec = 0;
+    tab.bitChangement = 0;
+    tab.signe = 0;
+
     mpz_set_ui(TX[0],0);
-    //mpz_set_ui(TX[indice],0);
+    //mpz_set_ui(TX[i],0);
 
     for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
-        if(n!=0){
+        if(tab.n!=0){
             //On cherche l'actuel code de gray associé à l'entier i
-            n = gray(i,nprec); //Claire: Mettre à jour le tableau dans la fonction Gray_tableau
-            //On cherche l'information de quel bit a changé entre l'actuel représentation de gray, et l'ancienne (boucle précédente)
-            bitChangement = n ^ nprec;
+            tab = gray(i,tab); //Claire: Mettre à jour le tableau dans la fonction Gray_tableau
 
-            //On cherche à connaître le bit associé à la valeur à soustraire ou ajouter
-            bitChangement = emplacementBit(bitChangement);
+            // //On cherche l'information de quel bit a changé entre l'actuel représentation de gray, et l'ancienne (boucle précédente)
+            // bitChangement = n ^ nprec;
+
+            // //On cherche à connaître le bit associé à la valeur à soustraire ou ajouter
+            // bitChangement = emplacementBit(bitChangement);
 
             //Condition permettant de savoir s'il faut ajouter ou soustraire 
-            if(nprec < n){
-                //TS[indice]= TS[indice-1] +ai[bitChangement-1+place];
-                mpz_add(TS[indice],TS[indice-1],ai[bitChangement-1+place]);
-                //TX[indice] = n;
-                mpz_set_ui(TX[indice],n);
+            if(tab.signe==0){
+                //TS[i]= TS[i-1] +ai[bitChangement-1+place];
+                mpz_add(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
+                //TX[i] = n;
+                mpz_set_ui(TX[i],tab.n);
 
-                printf("\n n : %llu  nprec: %llu BIT : +%llu ",n,nprec,bitChangement);
+                printf("\n n : %llu  nprec: %llu BIT : +%llu ",tab.n,tab.nPrec,tab.bitChangement);
             }
             else{
-                mpz_sub(TS[indice],TS[indice-1],ai[bitChangement-1+place]);
-                //TX[indice] = n;
-                mpz_set_ui(TX[indice],n);
-                printf("\n n : %llu  nprec: %llu BIT : -%llu",n,nprec,bitChangement);
+                mpz_sub(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
+                //TX[i] = n;
+                mpz_set_ui(TX[i],tab.n);
+                printf("\n n : %llu  nprec: %llu BIT : -%llu",tab.n,tab.nPrec,tab.bitChangement);
             }
-            nprec = n;
+            tab.nPrec = tab.n;
         }
         else{
-            mpz_set_ui(TS[indice],0);// indice = 0
-            //mpz_set_ui(TX[indice],0);// indice = 0
+            mpz_set_ui(TS[i],0);// i = 0
+            //mpz_set_ui(TX[i],0);// i = 0
             mpz_set_ui(TX[0],0);
-            n=1;
+            tab.n=1;
         }
-        indice++;
     }
     //affichage
     for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
