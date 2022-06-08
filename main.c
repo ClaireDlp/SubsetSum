@@ -181,9 +181,9 @@ unsigned long long emplacementBit(unsigned long long bit){
 }
 
 
-void CreationT(word* TS, unsigned long long* TX, word* ai, unsigned long long place){
+void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
     unsigned long long n = 0, nprec = 0, bitChangement = 0, indice = 0;
-    TX[0]=0;
+    mpz_set_ui(TX[0],0);
     //mpz_set_ui(TX[indice],0);
 
     for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
@@ -201,12 +201,14 @@ void CreationT(word* TS, unsigned long long* TX, word* ai, unsigned long long pl
                 //TS[indice]= TS[indice-1] +ai[bitChangement-1+place];
                 mpz_add(TS[indice],TS[indice-1],ai[bitChangement-1+place]);
                 //TX[indice] = n;
+                mpz_set_ui(TX[indice],n);
 
                 printf("\n n : %llu  nprec: %llu BIT : +%llu ",n,nprec,bitChangement);
             }
             else{
                 mpz_sub(TS[indice],TS[indice-1],ai[bitChangement-1+place]);
                 //TX[indice] = n;
+                mpz_set_ui(TX[indice],n);
                 printf("\n n : %llu  nprec: %llu BIT : -%llu",n,nprec,bitChangement);
             }
             nprec = n;
@@ -214,19 +216,19 @@ void CreationT(word* TS, unsigned long long* TX, word* ai, unsigned long long pl
         else{
             mpz_set_ui(TS[indice],0);// indice = 0
             //mpz_set_ui(TX[indice],0);// indice = 0
-            TX[0]=0;
+            mpz_set_ui(TX[0],0);
             n=1;
         }
         indice++;
     }
     //affichage
     for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
-        //printf("\nTS[%llu]=%Zd TX[%llu]=%llu",i,TS[i],i,TX[i]);
-        gmp_printf("\n%Zd",TS[i]);
+        gmp_printf("\nTS[%llu]=%Zd TX[%llu]=%Zd",i,TS[i],i,TX[i]);
+        //gmp_printf("\n%Zd",TS[i]);s
     }
 }
 
-void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S, unsigned long long* T1x, unsigned long long* T2x, unsigned long long* T3x, unsigned long long* T4x){
+void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S, word* T1x, word* T2x, word* T3x, word* T4x){
     CreationT(T1S,T1x,ai,0);
     CreationT(T2S,T2x,ai,WORD_SIZE/4);
     CreationT(T3S,T3x,ai,WORD_SIZE/2);
@@ -312,16 +314,16 @@ int main(){
         mpz_init(T4S[i]);
     }
 
-    unsigned long long T1x[tailleTableaux];
-    unsigned long long T2x[tailleTableaux];
-    unsigned long long T3x[tailleTableaux];
-    unsigned long long T4x[tailleTableaux];
-    // for(int i=0;i<tailleTableauS;++i){
-    //     mpz_init(T1x[i]);
-    //     mpz_init(T2x[i]);
-    //     mpz_init(T3x[i]);
-    //     mpz_init(T4x[i]);
-    // }
+    word T1x[tailleTableaux];
+    word T2x[tailleTableaux];
+    word T3x[tailleTableaux];
+    word T4x[tailleTableaux];
+    for(int i=0;i<tailleTableaux;++i){
+        mpz_init(T1x[i]);
+        mpz_init(T2x[i]);
+        mpz_init(T3x[i]);
+        mpz_init(T4x[i]);
+    }
 
 
     word s;
