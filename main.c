@@ -5,7 +5,7 @@
 #include <gmp.h>
 
 //valeur de la taille de n
-#define WORD_SIZE 16
+#define WORD_SIZE 32
 
 typedef short bool;
 #define true 1
@@ -305,11 +305,7 @@ void triParDenombrement(pair* T, pair* RES, unsigned long long M, unsigned long 
     printf("\n-------------------------TRI FAIT");
     for (unsigned long long i = 0; i < tailleT; i++){
         gmp_printf("\n RES[i].word : %Zd   RES[i].indexe : %llu",RES[i].word,RES[i].indexe);
-    }
-
-
-
-    
+    } 
 }
 
 //Algo3(T1S,T2S,T3S,T4S,10);
@@ -420,6 +416,7 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
             mpz_sub(tmp_w,TargetSum,tmp_w);
             mpz_mod_ui(tmp_w,tmp_w,M);
             unsigned long long ot = mpz_get_ui(tmp_w);
+            
 
             for (unsigned long long j = 0; j < tailleTableauS; j++)
             {
@@ -430,6 +427,7 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
                     mpz_sub(T,TargetSum,T3S[j]);
                     mpz_sub(T,T,T4S[j]);
                     mpz_init_set(Tprime,T);
+                    printf("\n TPRIME : %lu",mpz_get_ui(Tprime));
                     Liste3 parcoursS1 = S1;
                     if(parcoursS1!=NULL){ //Ameliorer synthaxe...
                         if(parcoursS1->suivant==NULL){
@@ -480,6 +478,7 @@ void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S
     CreationT(T3S,T3x,ai,WORD_SIZE/2);
     CreationT(T4S,T4x,ai,3*(WORD_SIZE/4));
     ListeSol SOL = Algo3(T1S, T2S, T3S, T4S, s);
+    //FAIRE LA CONCATENATION
     if(SOL!=NULL){
         while(SOL!=NULL){
             gmp_printf("\n %Zd %Zd %Zd %Zd",T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l]);
@@ -493,21 +492,6 @@ void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S
 }
 
 int main(){
-
-    //lien doc: https://gmplib.org/gmp-man-6.2.1.pdf
-
-    //Initialiser un entier a à 0 avec n bits: mpz_init2(a, n)
-    //En fin de programme: libération de mémoire: mpz_clear(a)
-    //Affecter une valeur aléatoire à a: mpz_set(a,rand()%(word)(1<<WORD_SIZE))
-    //Ajouter deux entiers a= a1+a2: mpz_add (a, a1, a2)
-    //réduction modulaire a mod 1<<n: mpz_mod(a,a, 1<<n)
-
-    //Opérations binaires: https://gmplib.org/manual/Integer-Logic-and-Bit-Fiddling
-    //a= b&c : mpz_and (a, b, c)
-    //a =b^c mpz_xor (a, b, c)
-    
-
-
 
     //On crée le tableau qui contiendra les éléments du vecteur a
     //word ai[WORD_SIZE];
@@ -525,11 +509,11 @@ int main(){
         generationAleaA(ai);
     }
     else{
-        //generationManuel();
+        //generationManuel();  // + chercher dans fichier et saisir le résultat dedans
     }
 
 
-    //ALORITHME 1
+    //---------------------ALORITHME 1----------------------------
     //word* xi = NULL; ????????
     
     unsigned long long tailleTableauS = (1<<(WORD_SIZE/4));
@@ -545,7 +529,6 @@ int main(){
     // mpz_mul_ui(tailleTableaux,tailleTableauS,WORD_SIZE/4);
 
 
-    //word T[tailleTableauS*4];
     word* T = malloc(sizeof(word)*tailleTableauS*4);
     for(int i=0;i<tailleTableauS*4;++i){
         mpz_init(T[i]); //DE même pour l'incrémaentation des ints...
@@ -560,11 +543,6 @@ int main(){
     //     mpz_init(T[i]);
     // }
 
-
-    // word T1S[tailleTableauS];
-    // word T2S[tailleTableauS];
-    // word T3S[tailleTableauS];
-    // word T4S[tailleTableauS];
     word* T1S = malloc(sizeof(word)*tailleTableauS);
     word* T2S = malloc(sizeof(word)*tailleTableauS);
     word* T3S = malloc(sizeof(word)*tailleTableauS);
@@ -577,10 +555,6 @@ int main(){
         mpz_init(T4S[i]);
     }
 
-    // word T1x[tailleTableaux];
-    // word T2x[tailleTableaux];
-    // word T3x[tailleTableaux];
-    // word T4x[tailleTableaux];
     word* T1x = malloc(sizeof(word)*tailleTableaux);
     word* T2x = malloc(sizeof(word)*tailleTableaux);
     word* T3x = malloc(sizeof(word)*tailleTableaux);
@@ -592,8 +566,7 @@ int main(){
         mpz_init(T4x[i]);
     }
 
-
-    word s;
+    word s; //TARGETSUM
     mpz_init(s);
     mpz_set_ui(s,10);
 
@@ -604,6 +577,6 @@ int main(){
         mpz_clear(ai[i]);
     }
 
-
-    //FAIRE LES FREE, METTRE EN MALLOC
+    //FAIRE LES FREE, METTRE EN MALLOC, CHANGER M EN GMP
+    // + chercher dans fichier et saisir le résultat dedans
 }
