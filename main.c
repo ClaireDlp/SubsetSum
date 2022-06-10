@@ -4,33 +4,34 @@
 #include <time.h>
 #include <gmp.h>
 
-// valeur de la taille de n
+//valeur de la taille de n
 #define WORD_SIZE 16
 
 typedef short bool;
 #define true 1
 #define false 0
 
-//stocker des chaînes de n bits.
-
-
-//typedef long unsigned word;
+//Représentation d'un mot
 typedef mpz_t word;
 
-
-typedef struct{
-    unsigned long long n;
-    unsigned long long nPrec;
-    unsigned long long bitChangement;
-    unsigned long long signe;
+//Définition d'un type permettant de retourner plusieurs informations à la suite de l'utilisation de la fonction gray
+typedef struct{ 
+    unsigned long long n; // Représente le code de gray actuel
+    unsigned long long nPrec; // Représente le code de gray antérieur à l'appel de la fonction gray
+    //CHANGEMENT : short suffit pour les deux variables qui précédent
+    unsigned long long bitChangement; // Précise l'emplacement du bit modifié
+    unsigned long long signe; // Précise si il y a eu un retrait ou ajout de bit à 1
 } graytab;
 
+//Définition du type pair : Utile pour stoker en pair un mot et son indexe dans son tableau
 typedef struct
 {
     word word;
     unsigned long long indexe;
 }pair;
 
+//Définition du type pair : Utile pour stoker en pair un mot, et un couple d'indexe représentant 
+//l'emplacement dans leur deux tableaux respectives des deux valeurs somme du mot
 typedef struct
 {
     word word;
@@ -38,13 +39,14 @@ typedef struct
     unsigned long long j;
 }triple;
 
+
 typedef struct cellule{
     triple valeur;
     struct cellule* suivant;
 } *Liste3;
 
 Liste3 AjouterListe3(triple t, Liste3 L){
-    Liste3 lst = malloc(sizeof(Liste3));
+    Liste3 lst = malloc(sizeof(triple)+sizeof(void*)); //revoir
     lst->valeur = t;
     lst->suivant = L;
     return lst;
@@ -63,166 +65,147 @@ typedef struct cellule2{
 } *ListeSol;
 
 ListeSol AjouterListeSol(solution s, ListeSol L){
-    ListeSol lst = malloc(sizeof(ListeSol));
+    ListeSol lst = malloc(sizeof(void*)+sizeof(solution));
     lst->valeur = s;
     lst->suivant = L;
+    printf("\nReussite");
     return lst;
 }
 
 
-//lien doc: https://gmplib.org/gmp-man-6.2.1.pdf
+//Fonctions de paramétrage avant le début des opérations du programme
 
-
-
-//Initialiser un entier a à 0 avec n bits: mpz_init2(a, n)
-//En fin de programme: libération de mémoire: mpz_clear(a)
-//Affecter une valeur aléatoire à a: mpz_set(a,rand()%(word)(1<<WORD_SIZE))
-//Ajouter deux entiers a= a1+a2: mpz_add (a, a1, a2)
-//réduction modulaire a mod 1<<n: mpz_mod(a,a, 1<<n)
-
-//Opérations binaires: https://gmplib.org/manual/Integer-Logic-and-Bit-Fiddling
-//a= b&c : mpz_and (a, b, c)
-//a =b^c mpz_xor (a, b, c)
-
-//A re-tester:
-//donne le nombre à gauche? mp_bitcnt_t mpz_scan1 (const mpz_t op, mp_bitcnt_t starting_bit)
-//void mpz_setbit (mpz_t rop, mp_bitcnt_t bit_index): rop= 1<<(bit_index)? 
-
-
-
-// mpz_init_set_ui   Initialisation et declaration
-// 
-
-
-
-
-// //Fonction qui permet de selectionner le mode de génération des éléments du vecteur a
-bool choixDeA(){
-    short rep = 1;
-    printf("Que souhaitez vous pour a :\n\t1: le générer aléatoirement\n\t2: le générer manuellement\n");
-    scanf("%hd",&rep);
-    if(rep == true){
-        return true;
-    }
-    else{
-        return false;
-    }
-}
-
-// //Fonction qui permet d'afficher les éléments du vecteur a
-void afficherA(word* ai){
-    printf("\na = (");
-    for(int i = 0; i<WORD_SIZE-1; ++i){
-        gmp_printf("%Zd,",ai[i]);
-    }
-    gmp_printf("%Zd)",ai[WORD_SIZE-1]);
-}
-
-// //Fonction qui permet de générer de façon aléatoire les éléments du vecteur a
-void generationAleaA(word* ai){
-    srand(time(NULL));
-    //int n = choixDeN();
-    for(int i = 0; i<WORD_SIZE; ++i){
-        //A REVOIR
-        //%(max-min+1) + min;
-        mpz_set_ui(ai[i],rand() % 10);//(1ULL<<WORD_SIZE));
-    }
-    afficherA(ai);
-}
-
-
-//Fonction qui permet de chosir la taille de n
-// int choixDeN(){
-//     int n = 8;
-//     printf("\nCombien d'éléments dans a souhaitez vous ? Attention la valeur saisie doit être une puissance de 2 et >= 8\n");
-//     scanf("%d",&n);
-//     if(round(log2(n)) != log2(n) && n >=8){ //8 ou 4 ? 
-//         return choixDeN();
-//     }
-//     return n;
-// }
-
-
-//--------------------------------GRAY-------------------------------------
-
-// //Fonction qui permet de chercher le nombre de bit à 1 dans un entier
-// int nombreDe1(int n, int cpt){
-//     if(n==0){
-//         return cpt;
-//     }
-//     else{
-//         int i = floor(log2(n));
-//         n = n - (1<<i);
-//         return nombreDe1(n,cpt+1);
-//     }
-// }
-
-// //Fonction qui inverse inverse le bit situé à gauche du bit 1 le plus à droite dans un entier
-// word inverse(word n){
-//     word nb = n;
-//     while(round(log2(nb)) - log2(nb) != 0){
-//         int i = floor(log2(nb));
-//         nb = nb - (1<<i);q
-//     }
-//     word ntest = n;
-//     if((ntest|(nb*2))==n+nb*2){
-//         return n+nb*2;
-//     }
-//     return n-nb*2;
-// }
-
-
-// //Fonction qui retourne le code de gray d'un i nb donné
-// word gray(word nb){
-//     int nb1 = nombreDe1(nb,0);
-//     if(nb1 % 2 == 0){
-//         if(nb % 2 == 0){
-//             nb++;
-//         }
-//         else{
-//             nb--;
-//         }
-//     }
-//     else{
-//         nb = inverse(nb);
-//     }
-//     return nb;
-// }
-
-//Fonction qui permet de chercher le nombre de bit à 0 à gauche du dernier bit à 1, et retourne ce résultat + 1
-unsigned long long nombreDe0gauche(unsigned long long n){
-    unsigned long long i = 0;
-    unsigned long long temp = 0;
-    if(n!=0){
-        while(temp==0){
-            temp = n & (1<<i);
-            i++;
+    //Fonction qui permet de selectionner le mode de génération des éléments du vecteur a
+    bool choixDeA(){
+        short rep = 1;
+        printf("Que souhaitez vous pour a :\n\t1: le générer aléatoirement\n\t2: le générer manuellement\n");
+        scanf("%hd",&rep);
+        if(rep == true){
+            return true;
+        }
+        else{
+            return false;
         }
     }
-    else{
-        i++;
-    }
-    return i;
-}
 
-//Fonction qui renvoie le nombre de gray correspondant à partir, d'un nombre entier correspondant au code de gray associé, et le code de gray correcpondant à l'entier associé n-1
-graytab gray(unsigned long long n, graytab tab){
-    unsigned long long Nb0 = nombreDe0gauche(n);
-    unsigned long long temp = tab.nPrec >> (Nb0-1);
-    if(temp % 2 == 0){
-        tab.n = tab.nPrec+(1<<(Nb0-1));
-        tab.signe = 0;
+    //Fonction qui permet d'afficher les éléments du vecteur a
+    void afficherA(word* ai){
+        printf("\na = (");
+        for(int i = 0; i<WORD_SIZE-1; ++i){
+            gmp_printf("%Zd,",ai[i]);
+        }
+        gmp_printf("%Zd)",ai[WORD_SIZE-1]);
     }
-    else{
-        tab.n = tab.nPrec-(1<<(Nb0-1));
-        tab.signe = 1;
+
+    //Fonction qui permet de générer de façon aléatoire les éléments du vecteur a
+    void generationAleaA(word* ai){
+        srand(time(NULL));
+        //int n = choixDeN();
+        for(int i = 0; i<WORD_SIZE; ++i){
+            //CHANGEMENT
+            //%(max-min+1) + min;
+            mpz_set_ui(ai[i],rand() % 10);//(1ULL<<WORD_SIZE));
+        }
+        afficherA(ai);
     }
-    tab.bitChangement = Nb0;
-    return tab;
-}
 
-//-------------------------------------------------------------------------
+    //Fonction qui permet de chosir la taille de n
+    // int choixDeN(){
+    //     int n = 8;
+    //     printf("\nCombien d'éléments dans a souhaitez vous ? Attention la valeur saisie doit être une puissance de 2 et >= 8\n");
+    //     scanf("%d",&n);
+    //     if(round(log2(n)) != log2(n) && n >=8){ //8 ou 4 ? 
+    //         return choixDeN();
+    //     }
+    //     return n;
+    // }
 
+//Fonctions qui effectuent les opérations utilent au déroulement du programme
+
+    //Fonctions permettant de connaître le code de gray de sa valeur parrallèle entière (Ancienne version : pas optimisé, avantage : pas besoin d'avoir l'information du code de gray précédent)
+
+        // //Fonction qui permet de chercher le nombre de bit à 1 dans un entier
+        // int nombreDe1(int n, int cpt){
+        //     if(n==0){
+        //         return cpt;
+        //     }
+        //     else{
+        //         int i = floor(log2(n));
+        //         n = n - (1<<i);
+        //         return nombreDe1(n,cpt+1);
+        //     }
+        // }
+
+        // //Fonction qui inverse inverse le bit situé à gauche du bit 1 le plus à droite dans un entier
+        // word inverse(word n){
+        //     word nb = n;
+        //     while(round(log2(nb)) - log2(nb) != 0){
+        //         int i = floor(log2(nb));
+        //         nb = nb - (1<<i);q
+        //     }
+        //     word ntest = n;
+        //     if((ntest|(nb*2))==n+nb*2){
+        //         return n+nb*2;
+        //     }
+        //     return n-nb*2;
+        // }
+
+
+        // //Fonction qui retourne le code de gray d'un i nb donné
+        // word gray(word nb){
+        //     int nb1 = nombreDe1(nb,0);
+        //     if(nb1 % 2 == 0){
+        //         if(nb % 2 == 0){
+        //             nb++;
+        //         }
+        //         else{
+        //             nb--;
+        //         }
+        //     }
+        //     else{
+        //         nb = inverse(nb);
+        //     }
+        //     return nb;
+        // }
+
+    //Fonctions permettant de connaître le code de gray de sa valeur parrallèle entière (inconvénient : besoin de connaître la valeur du code de gray précédent)
+
+        //Fonction qui permet de chercher le nombre de bit à 0 à gauche du dernier bit à 1, et retourne ce résultat + 1
+        unsigned long long nombreDe0gauche(unsigned long long n){
+            unsigned long long i = 0;
+            unsigned long long temp = 0;
+            if(n!=0){
+                while(temp==0){
+                    temp = n & (1<<i);
+                    i++;
+                }
+            }
+            else{
+                i++;
+            }
+            return i;
+        }
+
+        //Fonction qui renvoie le nombre de gray correspondant à partir, d'un nombre entier correspondant au code de gray associé, et le code de gray correcpondant à l'entier associé n-1
+        graytab gray(unsigned long long n, graytab tab){
+            unsigned long long Nb0 = nombreDe0gauche(n);
+            unsigned long long temp = tab.nPrec >> (Nb0-1);
+            if(temp % 2 == 0){
+                tab.n = tab.nPrec+(1<<(Nb0-1));
+                tab.signe = 0;
+            }
+            else{
+                tab.n = tab.nPrec-(1<<(Nb0-1));
+                tab.signe = 1;
+            }
+            tab.bitChangement = Nb0;
+            return tab;
+        }
+
+    //-------------------------------------------------------------------------
+
+
+//Regarder cette fonction pour optimiser nombreDe0gauche()
 
 // //Fonction qui renvoie l'emplacement du bit dans la variable "bit"
 // //La variable "bit" contiendra uniquement une valeur composé dans sa forme binaire d'un seul bit à 1
@@ -330,7 +313,7 @@ void triParDenombrement(pair* T, pair* RES, unsigned long long M, unsigned long 
 }
 
 //Algo3(T1S,T2S,T3S,T4S,10);
-void Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
+ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
     // word M;
     // //M = (1<<WORD_SIZE);
     // mpz_init_set_ui(M,1);
@@ -406,21 +389,17 @@ void Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
                     mpz_init(t.word);
                     mpz_add(t.word,T2S[j]/*RES1[j].word*/,ol); //Revoir les valeurs
                     S1 = AjouterListe3(t,S1);
-                    printf("\nS1 %llu",om);
                 }
             }
         }
         //on affiche
         Liste3 parcours = S1;
         if(parcours!=NULL){
-            printf(" START ");
             while(parcours->suivant!=NULL){
-                printf("\n IN %llu",parcours->valeur.j);
                 parcours = parcours->suivant;
             }
             //SI = NULL
             printf("\n%llu",parcours->valeur.j);
-            printf(" STOP");
         }
 
 
@@ -431,70 +410,68 @@ void Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
 
         // --------------------------
 
-        // for(unsigned long long i = 1; i < tailleTableauS; i++){
-        //     word ol;
-        //     mpz_init_set(ol,T3S[i]);
+        for(unsigned long long i = 1; i < tailleTableauS; i++){
+            word ol;
+            mpz_init_set(ol,T3S[i]);
 
-        //     word tmp_w;
-        //     mpz_init_set_ui(tmp_w,om);
-        //     mpz_sub(tmp_w,tmp_w,ol);
-        //     mpz_sub(tmp_w,TargetSum,tmp_w);
-        //     mpz_mod_ui(tmp_w,tmp_w,M);
-        //     unsigned long long ot = mpz_get_ui(tmp_w);
+            word tmp_w;
+            mpz_init_set_ui(tmp_w,om);
+            mpz_sub(tmp_w,tmp_w,ol);
+            mpz_sub(tmp_w,TargetSum,tmp_w);
+            mpz_mod_ui(tmp_w,tmp_w,M);
+            unsigned long long ot = mpz_get_ui(tmp_w);
 
-        //     for (unsigned long long j = 0; j < tailleTableauS; j++)
-        //     {
-        //         if(mpz_get_ui(RES2[j].word)==ot){
-        //             word Tprime;
-        //             word T;
-        //             mpz_init_set(T,TargetSum); //Probleme d'incrementation a voir au dessus
-        //             mpz_sub(T,T,T3S[j]);
-        //             mpz_sub(T,T,T4S[j]);
-        //             mpz_init_set(Tprime,T);
-        //             Liste3 parcoursS1 = S1;
-        //             if(parcoursS1!=NULL){ //Ameliorer synthaxe...
-        //                 if(parcoursS1->suivant==NULL){
-        //                     if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
-        //                         solution s;
-        //                         s.i = parcoursS1->valeur.i;
-        //                         s.j = parcoursS1->valeur.j;
-        //                         s.k = i;
-        //                         s.l = RES2[j].indexe;
-        //                         SOL = AjouterListeSol(s,SOL);
-        //                         printf("\n 1 solution");
-        //                     }
-        //                 }
-        //                 else{
-        //                     while(parcoursS1->suivant!=NULL){
-        //                         if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
-        //                             solution s;
-        //                             s.i = parcoursS1->valeur.i;
-        //                             s.j = parcoursS1->valeur.j;
-        //                             s.k = i;
-        //                             s.l = RES2[j].indexe;
-        //                             SOL = AjouterListeSol(s,SOL);
-        //                             printf("\n 1 solution");
-        //                         }
-        //                         parcoursS1 = parcoursS1->suivant;
-        //                     }
+            for (unsigned long long j = 0; j < tailleTableauS; j++)
+            {
+                if(mpz_get_ui(RES2[j].word)==ot){
+                    word Tprime;
+                    word T;
+                    mpz_init(T);
+                    mpz_sub(T,TargetSum,T3S[j]);
+                    mpz_sub(T,T,T4S[j]);
+                    mpz_init_set(Tprime,T);
+                    Liste3 parcoursS1 = S1;
+                    if(parcoursS1!=NULL){ //Ameliorer synthaxe...
+                        if(parcoursS1->suivant==NULL){
+                            if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
+                                solution s;
+                                s.i = parcoursS1->valeur.i;
+                                s.j = parcoursS1->valeur.j;
+                                s.k = i;
+                                s.l = RES2[j].indexe;
+                                SOL = AjouterListeSol(s,SOL);
+                            }
+                        }
+                        else{
+                            while(parcoursS1->suivant!=NULL){
+                                if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
+                                    solution s;
+                                    s.i = parcoursS1->valeur.i;
+                                    s.j = parcoursS1->valeur.j;
+                                    s.k = i;
+                                    s.l = RES2[j].indexe;
+                                    SOL = AjouterListeSol(s,SOL);
+                                }
+                                parcoursS1 = parcoursS1->suivant;
+                            }
                             
-        //                     if(parcoursS1->suivant==NULL){
-        //                         if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
-        //                             solution s;
-        //                             s.i = parcoursS1->valeur.i;
-        //                             s.j = parcoursS1->valeur.j;
-        //                             s.k = i;
-        //                             s.l = RES2[j].indexe;
-        //                             SOL = AjouterListeSol(s,SOL);
-        //                             printf("\n 1 solution");
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        //}
+                            if(parcoursS1->suivant==NULL){
+                                if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
+                                    solution s;
+                                    s.i = parcoursS1->valeur.i;
+                                    s.j = parcoursS1->valeur.j;
+                                    s.k = i;
+                                    s.l = RES2[j].indexe;
+                                    SOL = AjouterListeSol(s,SOL);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
+    return SOL;
 }
 
 void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S, word* T1x, word* T2x, word* T3x, word* T4x){
@@ -502,7 +479,17 @@ void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S
     CreationT(T2S,T2x,ai,WORD_SIZE/4);
     CreationT(T3S,T3x,ai,WORD_SIZE/2);
     CreationT(T4S,T4x,ai,3*(WORD_SIZE/4));
-    Algo3(T1S, T2S, T3S, T4S, s);
+    ListeSol SOL = Algo3(T1S, T2S, T3S, T4S, s);
+    if(SOL!=NULL){
+        while(SOL!=NULL){
+            gmp_printf("\n %Zd %Zd %Zd %Zd",T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l]);
+            SOL = SOL->suivant;
+        }
+        gmp_printf("\n %Zd %Zd %Zd %Zd",T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l]);
+    }
+    else{
+        printf("\nPAS DE SOLUTIONS");
+    }
 }
 
 int main(){

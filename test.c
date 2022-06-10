@@ -6,6 +6,10 @@
 
 
 
+//lien doc: https://gmplib.org/gmp-man-6.2.1.pdf
+
+
+
 //Initialiser un entier a à 0 avec n bits: mpz_init2(a, n)
 //En fin de programme: libération de mémoire: mpz_clear(a)
 //Affecter une valeur aléatoire à a: mpz_set(a,rand()%(word)(1<<WORD_SIZE))
@@ -15,6 +19,10 @@
 //Opérations binaires: https://gmplib.org/manual/Integer-Logic-and-Bit-Fiddling
 //a= b&c : mpz_and (a, b, c)
 //a =b^c mpz_xor (a, b, c)
+
+//A re-tester:
+//donne le nombre à gauche? mp_bitcnt_t mpz_scan1 (const mpz_t op, mp_bitcnt_t starting_bit)
+//void mpz_setbit (mpz_t rop, mp_bitcnt_t bit_index): rop= 1<<(bit_index)? 
 #define WORD_SIZE 32
 
 int main(){
