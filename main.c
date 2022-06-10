@@ -5,7 +5,7 @@
 #include <gmp.h>
 
 // valeur de la taille de n
-#define WORD_SIZE 8
+#define WORD_SIZE 16
 
 typedef short bool;
 #define true 1
@@ -386,7 +386,6 @@ void Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
     Liste3 S1 = NULL;
     for(unsigned long long om = 0; om < M; om++){
         S1 = NULL;
-        unsigned long long om = 0;
 
         for(unsigned long long i = 1; i < tailleTableauS; i++){
             word ol;
@@ -402,25 +401,28 @@ void Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
             {
                 if(mpz_get_ui(RES1[j].word)==ot){
                     triple t;
-                    t.i = j; //a chnager la notation
+                    t.i = i; //a chnager la notation
                     t.j = RES1[j].indexe;
                     mpz_init(t.word);
-                    mpz_add(t.word,RES1[j].word,ol);
+                    mpz_add(t.word,T2S[j]/*RES1[j].word*/,ol); //Revoir les valeurs
                     S1 = AjouterListe3(t,S1);
+                    printf("\nS1 %llu",om);
                 }
             }
         }
-        // if(S1!=NULL){
-        //     printf("\n blou");
-        //     printf("\n%llu",S1->valeur.j);
-        //     printf(" START");
-        //     while(S1->suivant!=NULL){
-        //         printf("\n IN %llu",S1->valeur.j);
-        //         S1 = S1->suivant;
-        //     }
-        //     //printf("\n%llu",S1->valeur.j);
-        // }
-        //printf("STOP");
+        //on affiche
+        Liste3 parcours = S1;
+        if(parcours!=NULL){
+            printf(" START ");
+            while(parcours->suivant!=NULL){
+                printf("\n IN %llu",parcours->valeur.j);
+                parcours = parcours->suivant;
+            }
+            //SI = NULL
+            printf("\n%llu",parcours->valeur.j);
+            printf(" STOP");
+        }
+
 
 
         // -------------------------- 
@@ -429,66 +431,69 @@ void Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
 
         // --------------------------
 
-        for(unsigned long long i = 1; i < tailleTableauS; i++){
-            word ol;
-            mpz_init_set(ol,T3S[i]);
+        // for(unsigned long long i = 1; i < tailleTableauS; i++){
+        //     word ol;
+        //     mpz_init_set(ol,T3S[i]);
 
-            word tmp_w;
-            mpz_init_set_ui(tmp_w,om);
-            mpz_sub(tmp_w,tmp_w,ol);
-            mpz_sub(tmp_w,TargetSum,tmp_w);
-            mpz_mod_ui(tmp_w,tmp_w,M);
-            unsigned long long ot = mpz_get_ui(tmp_w);
+        //     word tmp_w;
+        //     mpz_init_set_ui(tmp_w,om);
+        //     mpz_sub(tmp_w,tmp_w,ol);
+        //     mpz_sub(tmp_w,TargetSum,tmp_w);
+        //     mpz_mod_ui(tmp_w,tmp_w,M);
+        //     unsigned long long ot = mpz_get_ui(tmp_w);
 
-            for (unsigned long long j = 0; j < tailleTableauS; j++)
-            {
-                if(mpz_get_ui(RES2[j].word)==ot){
-                    word Tprime;
-                    word T;
-                    mpz_init_set(T,TargetSum); //Probleme d'incrementation a voir au dessus
-                    mpz_sub(T,T,T3S[j]);
-                    mpz_sub(T,T,T4S[j]);
-                    mpz_init_set(Tprime,T);
-                    Liste3 parcoursS1 = S1;
-                    if(parcoursS1!=NULL){ //Ameliorer synthaxe...
-                        if(parcoursS1->suivant==NULL){
-                            if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
-                                solution s;
-                                s.i = parcoursS1->valeur.i;
-                                s.j = parcoursS1->valeur.j;
-                                s.k = i;
-                                s.l = RES2[j].indexe;
-                                SOL = AjouterListeSol(s,SOL);
-                            }
-                        }
-                        else{
-                            while(parcoursS1->suivant!=NULL){
-                                if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
-                                    solution s;
-                                    s.i = parcoursS1->valeur.i;
-                                    s.j = parcoursS1->valeur.j;
-                                    s.k = i;
-                                    s.l = RES2[j].indexe;
-                                    SOL = AjouterListeSol(s,SOL);
-                                }
-                                parcoursS1 = parcoursS1->suivant;
-                            }
+        //     for (unsigned long long j = 0; j < tailleTableauS; j++)
+        //     {
+        //         if(mpz_get_ui(RES2[j].word)==ot){
+        //             word Tprime;
+        //             word T;
+        //             mpz_init_set(T,TargetSum); //Probleme d'incrementation a voir au dessus
+        //             mpz_sub(T,T,T3S[j]);
+        //             mpz_sub(T,T,T4S[j]);
+        //             mpz_init_set(Tprime,T);
+        //             Liste3 parcoursS1 = S1;
+        //             if(parcoursS1!=NULL){ //Ameliorer synthaxe...
+        //                 if(parcoursS1->suivant==NULL){
+        //                     if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
+        //                         solution s;
+        //                         s.i = parcoursS1->valeur.i;
+        //                         s.j = parcoursS1->valeur.j;
+        //                         s.k = i;
+        //                         s.l = RES2[j].indexe;
+        //                         SOL = AjouterListeSol(s,SOL);
+        //                         printf("\n 1 solution");
+        //                     }
+        //                 }
+        //                 else{
+        //                     while(parcoursS1->suivant!=NULL){
+        //                         if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
+        //                             solution s;
+        //                             s.i = parcoursS1->valeur.i;
+        //                             s.j = parcoursS1->valeur.j;
+        //                             s.k = i;
+        //                             s.l = RES2[j].indexe;
+        //                             SOL = AjouterListeSol(s,SOL);
+        //                             printf("\n 1 solution");
+        //                         }
+        //                         parcoursS1 = parcoursS1->suivant;
+        //                     }
                             
-                            if(parcoursS1->suivant==NULL){
-                                if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
-                                    solution s;
-                                    s.i = parcoursS1->valeur.i;
-                                    s.j = parcoursS1->valeur.j;
-                                    s.k = i;
-                                    s.l = RES2[j].indexe;
-                                    SOL = AjouterListeSol(s,SOL);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                     if(parcoursS1->suivant==NULL){
+        //                         if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
+        //                             solution s;
+        //                             s.i = parcoursS1->valeur.i;
+        //                             s.j = parcoursS1->valeur.j;
+        //                             s.k = i;
+        //                             s.l = RES2[j].indexe;
+        //                             SOL = AjouterListeSol(s,SOL);
+        //                             printf("\n 1 solution");
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        //}
     }
 }
 
@@ -518,7 +523,8 @@ int main(){
 
 
     //On crée le tableau qui contiendra les éléments du vecteur a
-    word ai[WORD_SIZE];
+    //word ai[WORD_SIZE];
+    word* ai = malloc(sizeof(word)*WORD_SIZE);
     for(int i=0;i<WORD_SIZE;++i){
         mpz_init(ai[i]);
     }
@@ -552,7 +558,8 @@ int main(){
     // mpz_mul_ui(tailleTableaux,tailleTableauS,WORD_SIZE/4);
 
 
-    word T[tailleTableauS*4];
+    //word T[tailleTableauS*4];
+    word* T = malloc(sizeof(word)*tailleTableauS*4);
     for(int i=0;i<tailleTableauS*4;++i){
         mpz_init(T[i]); //DE même pour l'incrémaentation des ints...
     }
@@ -567,10 +574,15 @@ int main(){
     // }
 
 
-    word T1S[tailleTableauS];
-    word T2S[tailleTableauS];
-    word T3S[tailleTableauS];
-    word T4S[tailleTableauS];
+    // word T1S[tailleTableauS];
+    // word T2S[tailleTableauS];
+    // word T3S[tailleTableauS];
+    // word T4S[tailleTableauS];
+    word* T1S = malloc(sizeof(word)*tailleTableauS);
+    word* T2S = malloc(sizeof(word)*tailleTableauS);
+    word* T3S = malloc(sizeof(word)*tailleTableauS);
+    word* T4S = malloc(sizeof(word)*tailleTableauS);
+
     for(int i=0;i<tailleTableauS;++i){
         mpz_init(T1S[i]);
         mpz_init(T2S[i]);
@@ -578,10 +590,14 @@ int main(){
         mpz_init(T4S[i]);
     }
 
-    word T1x[tailleTableaux];
-    word T2x[tailleTableaux];
-    word T3x[tailleTableaux];
-    word T4x[tailleTableaux];
+    // word T1x[tailleTableaux];
+    // word T2x[tailleTableaux];
+    // word T3x[tailleTableaux];
+    // word T4x[tailleTableaux];
+    word* T1x = malloc(sizeof(word)*tailleTableaux);
+    word* T2x = malloc(sizeof(word)*tailleTableaux);
+    word* T3x = malloc(sizeof(word)*tailleTableaux);
+    word* T4x = malloc(sizeof(word)*tailleTableaux);
     for(int i=0;i<tailleTableaux;++i){
         mpz_init(T1x[i]);
         mpz_init(T2x[i]);
@@ -600,4 +616,7 @@ int main(){
     for(int i=0;i<WORD_SIZE;++i){
         mpz_clear(ai[i]);
     }
+
+
+    //FAIRE LES FREE, METTRE EN MALLOC
 }
