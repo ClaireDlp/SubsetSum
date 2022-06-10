@@ -16,7 +16,7 @@ void F2list_count_low(size_t *w, F2list *L, size_t l, size_t start, size_t end){
     w[i] = 0;
   }
 
-  /* on parcoure les entrées de L*/
+  /* on parcourt les entrées de L*/
   for(i = start; i < end; i++){
     low = F2list_entry_low(L, i, l);
     w[low]++;
