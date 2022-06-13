@@ -72,6 +72,27 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
 }
 
 
+
+//Fonction peremettant d'insérer en tête de liste un Arbre 
+Liste3 insererentete(triple t, Liste3 lst) {
+    Liste3 L = malloc(sizeof(struct cellule));
+    L->valeur = t;
+    L->suivant = lst;
+    return L;
+}
+
+
+//Fonction peremettant d'insérer au milieu d'une liste un Arbre 
+Liste3 insereraumilieu(triple t, Liste3 lst1, Liste3 lst2) {
+    Liste3 L = malloc(sizeof(struct cellule));
+    L->valeur= t;
+    L->suivant = lst2;
+    lst1->suivant=L;
+    return lst1;
+}
+
+
+
 //Fonctions de paramétrage avant le début des opérations du programme
 
     //Fonction qui permet de selectionner le mode de génération des éléments du vecteur a
@@ -308,6 +329,23 @@ void triParDenombrement(pair* T, pair* RES, unsigned long long M, unsigned long 
     } 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //Algo3(T1S,T2S,T3S,T4S,10);
 ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
     // word M;
@@ -325,7 +363,7 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
 
 
     //CHANGEMENT
-    unsigned long long M = 10; //(1ULL<<WORD_SIZE);
+    unsigned long long M = (1ULL<<WORD_SIZE);
     unsigned long long tailleTableauS = (1<<(WORD_SIZE/4));
     printf("\n M : %llu  tailleTableauS : %llu  ",M, tailleTableauS);
 
@@ -409,24 +447,52 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
             }
         }
 
+
+
+
+//TOUS LES ELEMENTS MODULO 2 N / 4 COORECT
+
         //on affiche
-        // Liste3 parcours = S1;
-        // if(parcours!=NULL){
-        //     printf("\nListe :");
-        //     while(parcours->suivant!=NULL){
-        //         parcours = parcours->suivant;
-        //     }
-        //     //SI = NULL
-        //     printf("\n%llu",parcours->valeur.j);
-        // }
+        Liste3 parcours = S1;
+        if(parcours!=NULL){
+            printf("\nListe :");
+            while(parcours->suivant!=NULL){
+                parcours = parcours->suivant;
+            }
+            //SI = NULL
+            printf("\n%llu",parcours->valeur.j);
+        }
 
 
 
         // -------------------------- 
 
-        //TRIER LISTE S1 
+        //TRIER LISTE S1
+
+        Liste3 parcoursS1 = S1;
+
+        if(parcoursS1!=NULL){
+            Liste3 S1tri = NULL; //sauver
+            
+           // Liste3 S1 S1triparcours = S1tri;
+
+            while(parcoursS1->suivant!=NULL){
+                if(S1tri==NULL){
+                    S1tri = insererentete(parcoursS1->valeur,S1tri);
+                }
+                while(mpz_cmp(S1tri->valeur.word,parcoursS1->valeur.word)){
 
 
+
+                    S1tri = S1tri->suivant;
+                }
+
+
+
+
+                parcoursS1 = parcoursS1->suivant;
+            }
+        }
 
 
 
