@@ -434,7 +434,8 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
             mpz_mod_ui(tmp_w,tmp_w,M);
             gmp_printf("\naprès mod %Zd",tmp_w);
             unsigned long long ot = mpz_get_ui(tmp_w);
-            for (unsigned long long j = 0; j < tailleTableauS; j++)
+            for (unsigned long long j = 0; j < tailleTableauS; j++) //Claire: remplacer par recherche plus efficace
+		//la bonne valeur devrait être autour de RES1[ot]
             {
                 if(mpz_get_ui(RES1[j].word)==ot){
                     triple t;
