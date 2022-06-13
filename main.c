@@ -363,7 +363,7 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
 
 
     //CHANGEMENT
-    unsigned long long M = (1ULL<<WORD_SIZE);
+    unsigned long long M = (1ULL<<(WORD_SIZE/4));
     unsigned long long tailleTableauS = (1<<(WORD_SIZE/4));
     printf("\n M : %llu  tailleTableauS : %llu  ",M, tailleTableauS);
 
@@ -430,9 +430,10 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
             word tmp_w;
             mpz_init_set_ui(tmp_w,om);
             mpz_sub(tmp_w,tmp_w,ol);
+            gmp_printf("\navant mod %Zd",tmp_w);
             mpz_mod_ui(tmp_w,tmp_w,M);
+            gmp_printf("\naprès mod %Zd",tmp_w);
             unsigned long long ot = mpz_get_ui(tmp_w);
-
             for (unsigned long long j = 0; j < tailleTableauS; j++)
             {
                 if(mpz_get_ui(RES1[j].word)==ot){
@@ -442,7 +443,7 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
                     mpz_init(t.word);
                     mpz_add(t.word,T2S[j]/*RES1[j].word*/,ol); //Revoir les valeurs
                     S1 = AjouterListe3(t,S1);
-                    printf("\ni : %llu   j : %llu",i,RES1[j].indexe);
+                    //printf("\ni : %llu   j : %llu",i,RES1[j].indexe);
                 }
             }
         }
@@ -455,12 +456,13 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
         //on affiche
         Liste3 parcours = S1;
         if(parcours!=NULL){
-            printf("\nListe :");
+            printf("\nListe %llu",om);
             while(parcours->suivant!=NULL){
+                gmp_printf("\n%llu %llu %Zd",parcours->valeur.j, parcours->valeur.i, parcours->valeur.word);
                 parcours = parcours->suivant;
             }
             //SI = NULL
-            printf("\n%llu",parcours->valeur.j);
+            gmp_printf("\n%llu %llu %Zd",parcours->valeur.j, parcours->valeur.i, parcours->valeur.word);
         }
 
 
@@ -469,40 +471,32 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
 
         //TRIER LISTE S1
 
-        Liste3 parcoursS1 = S1;
+        // Liste3 parcoursS1 = S1;
 
-        if(parcoursS1!=NULL){
-            Liste3 S1tri = NULL; //sauver
+        // if(parcoursS1!=NULL){
+        //     Liste3 S1tri = NULL; //sauver
             
-           // Liste3 S1 S1triparcours = S1tri;
+        //    // Liste3 S1 S1triparcours = S1tri;
 
-            while(parcoursS1->suivant!=NULL){
-                if(S1tri==NULL){
-                    S1tri = insererentete(parcoursS1->valeur,S1tri);
-                }
-                while(mpz_cmp(S1tri->valeur.word,parcoursS1->valeur.word)){
-
-
-
-                    S1tri = S1tri->suivant;
-                }
+        //     while(parcoursS1->suivant!=NULL){
+        //         if(S1tri==NULL){
+        //             S1tri = insererentete(parcoursS1->valeur,S1tri);
+        //         }
+        //         while(mpz_cmp(S1tri->valeur.word,parcoursS1->valeur.word)){
 
 
 
-
-                parcoursS1 = parcoursS1->suivant;
-            }
-        }
+        //             S1tri = S1tri->suivant;
+        //         }
 
 
 
 
+        //         parcoursS1 = parcoursS1->suivant;
+        //     }
+        // }
 
-
-
-
-        // --------------------------
-
+        // -----------------------------
 
 
         for(unsigned long long i = 0; i < tailleTableauS; i++){
