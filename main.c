@@ -5,7 +5,7 @@
 #include <gmp.h>
 
 //valeur de la taille de n
-#define WORD_SIZE 32
+#define WORD_SIZE 8
 
 typedef short bool;
 #define true 1
@@ -46,7 +46,7 @@ typedef struct cellule{
 } *Liste3;
 
 Liste3 AjouterListe3(triple t, Liste3 L){
-    Liste3 lst = malloc(sizeof(triple)+sizeof(void*)); //revoir
+    Liste3 lst = malloc(sizeof(struct cellule)); //revoir
     lst->valeur = t;
     lst->suivant = L;
     return lst;
@@ -65,10 +65,9 @@ typedef struct cellule2{
 } *ListeSol;
 
 ListeSol AjouterListeSol(solution s, ListeSol L){
-    ListeSol lst = malloc(sizeof(void*)+sizeof(solution));
+    ListeSol lst = malloc(sizeof(struct cellule2));
     lst->valeur = s;
     lst->suivant = L;
-    printf("\nReussite");
     return lst;
 }
 
@@ -267,6 +266,7 @@ void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
         }
     }
     //affichage
+    printf("\n CREATION DE T : ");
     for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
         gmp_printf("\nTS[%llu]=%Zd TX[%llu]=%Zd",i,TS[i],i,TX[i]);
         //gmp_printf("\n%Zd",TS[i]);s
@@ -320,7 +320,12 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
     // mpz_init_set_ui(tailleTableauS,1);
     // mpz_mul_2exp(tailleTableauS,tailleTableauS,WORD_SIZE/4);
 
-    unsigned long long M = (1ULL<<WORD_SIZE);
+
+    printf("\n DEBUT ALGO3");
+
+
+    //CHANGEMENT
+    unsigned long long M = 10; //(1ULL<<WORD_SIZE);
     unsigned long long tailleTableauS = (1<<(WORD_SIZE/4));
     printf("\n M : %llu  tailleTableauS : %llu  ",M, tailleTableauS);
 
@@ -340,7 +345,7 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
         T4S2[i].indexe = i; 
     }
 
-    printf("\n-------------------------%llu",M);
+    printf("\n---------list SR (M)----------------%llu",M);
     for (unsigned long long i = 0; i < tailleTableauS; i++){
         gmp_printf("\n T2S2[i].word : %Zd   T2S[i] : %Zd",T2S2[i].word,T2S[i]);
         printf("  T2S2[i].indexe : %llu",T2S2[i].indexe);
@@ -356,6 +361,18 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
     triParDenombrement(T2S2,RES1,M,tailleTableauS);
     triParDenombrement(T4S2,RES2,M,tailleTableauS);
 
+    //penser à free T4S2 ici
+
+
+
+
+
+
+
+
+
+
+
 
     //SOL
     ListeSol SOL = NULL;
@@ -366,7 +383,9 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
     for(unsigned long long om = 0; om < M; om++){
         S1 = NULL;
 
-        for(unsigned long long i = 1; i < tailleTableauS; i++){
+        //changement d'indice ici i =0 au lieu de 1
+
+        for(unsigned long long i = 0; i < tailleTableauS; i++){
             word ol;
             mpz_init_set(ol,T1S[i]);
 
@@ -380,33 +399,47 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
             {
                 if(mpz_get_ui(RES1[j].word)==ot){
                     triple t;
-                    t.i = i; //a chnager la notation
+                    t.i = i;
                     t.j = RES1[j].indexe;
                     mpz_init(t.word);
                     mpz_add(t.word,T2S[j]/*RES1[j].word*/,ol); //Revoir les valeurs
                     S1 = AjouterListe3(t,S1);
+                    printf("\ni : %llu   j : %llu",i,RES1[j].indexe);
                 }
             }
         }
+
         //on affiche
-        Liste3 parcours = S1;
-        if(parcours!=NULL){
-            while(parcours->suivant!=NULL){
-                parcours = parcours->suivant;
-            }
-            //SI = NULL
-            printf("\n%llu",parcours->valeur.j);
-        }
+        // Liste3 parcours = S1;
+        // if(parcours!=NULL){
+        //     printf("\nListe :");
+        //     while(parcours->suivant!=NULL){
+        //         parcours = parcours->suivant;
+        //     }
+        //     //SI = NULL
+        //     printf("\n%llu",parcours->valeur.j);
+        // }
 
 
 
         // -------------------------- 
 
-        //TRIER LISTE S1 A FAIRE ICI !!!!!!!!!!!!!!!!!!!
+        //TRIER LISTE S1 
+
+
+
+
+
+
+
+
+
 
         // --------------------------
 
-        for(unsigned long long i = 1; i < tailleTableauS; i++){
+
+
+        for(unsigned long long i = 0; i < tailleTableauS; i++){
             word ol;
             mpz_init_set(ol,T3S[i]);
 
@@ -424,13 +457,12 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
                     word Tprime;
                     word T;
                     mpz_init(T);
-                    mpz_sub(T,TargetSum,T3S[j]);
+                    mpz_sub(T,TargetSum,ol); //CHANGEMENT  : T3S[j]
                     mpz_sub(T,T,T4S[j]);
                     mpz_init_set(Tprime,T);
-                    printf("\n TPRIME : %lu",mpz_get_ui(Tprime));
                     Liste3 parcoursS1 = S1;
                     if(parcoursS1!=NULL){ //Ameliorer synthaxe...
-                        if(parcoursS1->suivant==NULL){
+                        while(parcoursS1->suivant!=NULL){
                             if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
                                 solution s;
                                 s.i = parcoursS1->valeur.i;
@@ -439,30 +471,15 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
                                 s.l = RES2[j].indexe;
                                 SOL = AjouterListeSol(s,SOL);
                             }
+                            parcoursS1 = parcoursS1->suivant;
                         }
-                        else{
-                            while(parcoursS1->suivant!=NULL){
-                                if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
-                                    solution s;
-                                    s.i = parcoursS1->valeur.i;
-                                    s.j = parcoursS1->valeur.j;
-                                    s.k = i;
-                                    s.l = RES2[j].indexe;
-                                    SOL = AjouterListeSol(s,SOL);
-                                }
-                                parcoursS1 = parcoursS1->suivant;
-                            }
-                            
-                            if(parcoursS1->suivant==NULL){
-                                if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
-                                    solution s;
-                                    s.i = parcoursS1->valeur.i;
-                                    s.j = parcoursS1->valeur.j;
-                                    s.k = i;
-                                    s.l = RES2[j].indexe;
-                                    SOL = AjouterListeSol(s,SOL);
-                                }
-                            }
+                        if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
+                            solution s;
+                            s.i = parcoursS1->valeur.i;
+                            s.j = parcoursS1->valeur.j;
+                            s.k = i;
+                            s.l = RES2[j].indexe;
+                            SOL = AjouterListeSol(s,SOL);
                         }
                     }
                 }
@@ -480,7 +497,7 @@ void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S
     ListeSol SOL = Algo3(T1S, T2S, T3S, T4S, s);
     //FAIRE LA CONCATENATION
     if(SOL!=NULL){
-        while(SOL!=NULL){
+        while(SOL->suivant!=NULL){
             gmp_printf("\n %Zd %Zd %Zd %Zd",T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l]);
             SOL = SOL->suivant;
         }
@@ -572,11 +589,13 @@ int main(){
 
     Algo1(ai,s,T,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
 
-    //Dans une fonction
+    //Dans une fonction a faire pour tous !!!!!
     for(int i=0;i<WORD_SIZE;++i){
         mpz_clear(ai[i]);
     }
 
     //FAIRE LES FREE, METTRE EN MALLOC, CHANGER M EN GMP
     // + chercher dans fichier et saisir le résultat dedans
+
+    //S1 A TRANSFORMER EN TABLEAU
 }
