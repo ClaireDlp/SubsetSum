@@ -441,7 +441,7 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
                     t.i = i;
                     t.j = RES1[j].indexe;
                     mpz_init(t.word);
-                    mpz_add(t.word,T2S[j]/*RES1[j].word*/,ol); //Revoir les valeurs
+                    mpz_add(t.word,RES1[j].word,ol); //Revoir les valeurs
                     S1 = AjouterListe3(t,S1);
                     //printf("\ni : %llu   j : %llu",i,RES1[j].indexe);
                 }
