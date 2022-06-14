@@ -268,14 +268,15 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
 
         for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
             if(tab.n!=0){
-                //On cherche l'actuel code de gray associé à l'entier i
-                tab = gray(i,tab); //Claire: Mettre à jour le tableau dans la fonction Gray_tableau
 
                 // //On cherche l'information de quel bit a changé entre l'actuel représentation de gray, et l'ancienne (boucle précédente)
                 // bitChangement = n ^ nprec;
 
                 // //On cherche à connaître le bit associé à la valeur à soustraire ou ajouter
                 // bitChangement = emplacementBit(bitChangement);
+
+                //On cherche l'actuel code de gray associé à l'entier i
+                tab = gray(i,tab);
 
                 //Condition permettant de savoir s'il faut ajouter ou soustraire 
                 if(tab.signe==0){
@@ -307,7 +308,7 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
         }  
     }
 
-
+    //Fonction de tri par denombrement
     void triParDenombrement(word* TS, pair* T, pair* RES, unsigned long long M, unsigned long long tailleT){
         
         //CHANGEMENT
@@ -359,7 +360,8 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
     }
 
 
-    //Fonction qui permet de concaténer 4 valeur word et retourne une solution de l'algorithme de Schroeppel-Shamir
+    //Fonction qui permet de concaténer 4 valeur word et affiche une solution de l'algorithme de Schroeppel-Shamir
+    //CHANGEMENT : valeur à retourner
     void concatenation(word w1, word w2, word w3, word w4, unsigned long long taille){
         word res;
         mpz_init(res);
@@ -381,7 +383,7 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
         gmp_printf(" solution : %Zd",res);
     }
 
-    //Algo3(T1S,T2S,T3S,T4S,10);
+    //Algorithme 3 Modular 4-Way merge routine
     ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
         // word M;
         // //M = (1<<WORD_SIZE);
