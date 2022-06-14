@@ -1,3 +1,14 @@
+//|___________________________________________________________________________________|//
+//|Informations :                                                                     |// 
+//|                                                                                   |// 
+//|Schroeppel-Shamir algorithm fonctionnel mais non optimale,                         |//
+//|en cours de réalisation                                                            |// 
+//|                                                                                   |// 
+//|Source : Papier de Nick Howgrave-Graham et Antoine Joux, New generic algorithms    |//
+//|for hard knapsacks                                                                 |//
+//|___________________________________________________________________________________|//
+
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -5,9 +16,10 @@
 #include <gmp.h>
 
 
-
 //valeur de la taille de n
 #define WORD_SIZE 8
+
+//Activer l'affichage
 #define DEBUG 0
 
 typedef short bool;
@@ -242,6 +254,7 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
 // }
 
 
+    //Fonction qui permet de créer les différents tableaux utilisé dans l'algorithme de Schroeppel-Shamir algotithm
     void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
 
         graytab tab; // n, nprec, bitchangement et pos ou neg
@@ -346,9 +359,27 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
     }
 
 
+    //Fonction qui permet de concaténer 4 valeur word et retourne une solution de l'algorithme de Schroeppel-Shamir
+    void concatenation(word w1, word w2, word w3, word w4, unsigned long long taille){
+        word res;
+        mpz_init(res);
+        word ww1;
+        mpz_init(ww1);
+        word ww2;
+        mpz_init(ww2);
+        word ww3;
+        mpz_init(ww3);
+
+        mpz_mul_2exp(ww1,w1,taille*3);
+        mpz_mul_2exp(ww2,w2,taille*2);
+        mpz_mul_2exp(ww3,w3,taille);
 
 
-
+        mpz_ior(res,ww1,ww2);
+        mpz_ior(res,res,ww3);
+        mpz_ior(res,res,w4);
+        gmp_printf(" solution : %Zd",res);
+    }
 
     //Algo3(T1S,T2S,T3S,T4S,10);
     ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
@@ -411,7 +442,6 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
                         mpz_init(t.word);
                         mpz_add(t.word,T2S[j],ol);
                         S1 = AjouterListe3(t,S1);
-                        gmp_printf("\ni : %llu   j : %llu   T2S : %Zd   ol  :  %Zd",i,RES1[j].indexe,T2S[j],ol);
                     }
                 }
             }
@@ -503,15 +533,18 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
         CreationT(T4S,T4x,ai,3*(WORD_SIZE/4));
 
         ListeSol SOL = Algo3(T1S, T2S, T3S, T4S, s);
+
        
-        //On affiche les solutions, à partir de leur code de gray, concacénation à effectuer
+        //On affiche les solutions, à partir de leur code de gray, concaténation à effectuer
         //CHANGEMENT Faire afficher les résultats en code binaire classique
         if(SOL!=NULL){
             while(SOL->suivant!=NULL){
-                gmp_printf("\n %llu %llu %llu %llu",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
+                gmp_printf("\n %Zd %Zd %Zd %Zd",T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l]);
+                concatenation(T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l],WORD_SIZE/4);
                 SOL = SOL->suivant;
             }
-            gmp_printf("\n %llu %llu %llu %llu",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
+            gmp_printf("\n %Zd %Zd %Zd %Zd",T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l]);
+            concatenation(T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l],WORD_SIZE/4);
         }
         else{
             printf("\nPAS DE SOLUTIONS");
