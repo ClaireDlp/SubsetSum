@@ -4,8 +4,11 @@
 #include <time.h>
 #include <gmp.h>
 
+
+
 //valeur de la taille de n
 #define WORD_SIZE 8
+#define DEBUG 0
 
 typedef short bool;
 #define true 1
@@ -73,23 +76,22 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
 
 
 
-//Fonction peremettant d'insérer en tête de liste un Arbre 
-Liste3 insererentete(triple t, Liste3 lst) {
-    Liste3 L = malloc(sizeof(struct cellule));
-    L->valeur = t;
-    L->suivant = lst;
-    return L;
-}
+// //Fonction peremettant d'insérer en tête de liste un Arbre 
+// Liste3 insererentete(triple t, Liste3 lst) {
+//     Liste3 L = malloc(sizeof(struct cellule));
+//     L->valeur = t;
+//     L->suivant = lst;
+//     return L;
+// }
 
-
-//Fonction peremettant d'insérer au milieu d'une liste un Arbre 
-Liste3 insereraumilieu(triple t, Liste3 lst1, Liste3 lst2) {
-    Liste3 L = malloc(sizeof(struct cellule));
-    L->valeur= t;
-    L->suivant = lst2;
-    lst1->suivant=L;
-    return lst1;
-}
+// //Fonction peremettant d'insérer au milieu d'une liste un Arbre 
+// Liste3 insereraumilieu(triple t, Liste3 lst1, Liste3 lst2) {
+//     Liste3 L = malloc(sizeof(struct cellule));
+//     L->valeur= t;
+//     L->suivant = lst2;
+//     lst1->suivant=L;
+//     return lst1;
+// }
 
 
 
@@ -240,290 +242,242 @@ Liste3 insereraumilieu(triple t, Liste3 lst1, Liste3 lst2) {
 // }
 
 
-void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
+    void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
 
-    graytab tab; // n, nprec et bitchangement et pos ou neg
-    tab.n = 0;
-    tab.nPrec = 0;
-    tab.bitChangement = 0;
-    tab.signe = 0;
+        graytab tab; // n, nprec, bitchangement et pos ou neg
+        tab.n = 0;
+        tab.nPrec = 0;
+        tab.bitChangement = 0;
+        tab.signe = 0;
 
-    mpz_set_ui(TX[0],0);
-    //mpz_set_ui(TX[i],0);
+        mpz_set_ui(TX[0],0);
+        //mpz_set_ui(TX[i],0);
 
-    for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
-        if(tab.n!=0){
-            //On cherche l'actuel code de gray associé à l'entier i
-            tab = gray(i,tab); //Claire: Mettre à jour le tableau dans la fonction Gray_tableau
+        for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
+            if(tab.n!=0){
+                //On cherche l'actuel code de gray associé à l'entier i
+                tab = gray(i,tab); //Claire: Mettre à jour le tableau dans la fonction Gray_tableau
 
-            // //On cherche l'information de quel bit a changé entre l'actuel représentation de gray, et l'ancienne (boucle précédente)
-            // bitChangement = n ^ nprec;
+                // //On cherche l'information de quel bit a changé entre l'actuel représentation de gray, et l'ancienne (boucle précédente)
+                // bitChangement = n ^ nprec;
 
-            // //On cherche à connaître le bit associé à la valeur à soustraire ou ajouter
-            // bitChangement = emplacementBit(bitChangement);
+                // //On cherche à connaître le bit associé à la valeur à soustraire ou ajouter
+                // bitChangement = emplacementBit(bitChangement);
 
-            //Condition permettant de savoir s'il faut ajouter ou soustraire 
-            if(tab.signe==0){
-                //TS[i]= TS[i-1] +ai[bitChangement-1+place];
-                mpz_add(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
-                //TX[i] = n;
-                mpz_set_ui(TX[i],tab.n);
-
-                printf("\n n : %llu  nprec: %llu BIT : +%llu ",tab.n,tab.nPrec,tab.bitChangement);
+                //Condition permettant de savoir s'il faut ajouter ou soustraire 
+                if(tab.signe==0){
+                    //TS[i]= TS[i-1] +ai[bitChangement-1+place];
+                    mpz_add(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
+                    //TX[i] = n;
+                    mpz_set_ui(TX[i],tab.n);
+                }
+                else{
+                    mpz_sub(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
+                    //TX[i] = n;
+                    mpz_set_ui(TX[i],tab.n);
+                }
+                tab.nPrec = tab.n;
             }
             else{
-                mpz_sub(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
-                //TX[i] = n;
-                mpz_set_ui(TX[i],tab.n);
-                printf("\n n : %llu  nprec: %llu BIT : -%llu",tab.n,tab.nPrec,tab.bitChangement);
+                mpz_set_ui(TS[i],0);// i = 0
+                //mpz_set_ui(TX[i],0);// i = 0
+                mpz_set_ui(TX[0],0);
+                tab.n=1;
             }
-            tab.nPrec = tab.n;
         }
-        else{
-            mpz_set_ui(TS[i],0);// i = 0
-            //mpz_set_ui(TX[i],0);// i = 0
-            mpz_set_ui(TX[0],0);
-            tab.n=1;
+        if(DEBUG){
+            printf("\n CREATION DE T : ");
+            for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
+                gmp_printf("\nTS[%llu]=%Zd TX[%llu]=%Zd",i,TS[i],i,TX[i]);
+                //gmp_printf("\n%Zd",TS[i]);s
+            }
+        }  
+    }
+
+
+    void triParDenombrement(word* TS, pair* T, pair* RES, unsigned long long M, unsigned long long tailleT){
+        
+        //CHANGEMENT
+        unsigned long long* C = malloc(sizeof(unsigned long long)*M);
+
+        word* TStrie = malloc(sizeof(word)*tailleT);
+
+        for (unsigned long long i = 0; i < tailleT; ++i){
+            mpz_init(RES[i].word);
+            mpz_init(TStrie[i]);
         }
-    }
-    //affichage
-    printf("\n CREATION DE T : ");
-    for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
-        gmp_printf("\nTS[%llu]=%Zd TX[%llu]=%Zd",i,TS[i],i,TX[i]);
-        //gmp_printf("\n%Zd",TS[i]);s
-    }
-}
+
+        for (unsigned long long i = 0; i < M; ++i){
+            C[i] = 0;
+        }
+
+        for (unsigned long long i = 0; i < tailleT; ++i){
+            C[mpz_get_ui(T[i].word)] = C[mpz_get_ui(T[i].word)] + 1;
+        }
+
+        for (unsigned long long i = 1; i < M; ++i){
+            C[i] = C[i] + C[i-1];
+        }
+
+        for (unsigned long long i = 0; i < tailleT; ++i){
+            mpz_set(RES[C[mpz_get_ui(T[i].word)]-1].word,T[i].word);
+            RES[C[mpz_get_ui(T[i].word)]-1].indexe = T[i].indexe;
+            C[mpz_get_ui(T[i].word)] = C[mpz_get_ui(T[i].word)] -1;
+        }
 
 
-void triParDenombrement(pair* T, pair* RES, unsigned long long M, unsigned long long tailleT){
-    //  unsigned long long C[M];
-    unsigned long long* C = malloc(sizeof(unsigned long long)*M);
-    //pair RES[tailleT];
+        //CHANGEMENT : OPTIMISER EN MEMOIRE : trie de TS
+        for (unsigned long long i = 0; i < tailleT; ++i){
+            mpz_set(TStrie[i],TS[RES[i].indexe]);
+        }
+        for (unsigned long long i = 0; i < tailleT; ++i){
+            mpz_set(TS[i],TStrie[i]);
+        }
 
-    for (unsigned long long i = 0; i < tailleT; ++i){
-        mpz_init(RES[i].word);
-    }
+        if(DEBUG){
+            printf("\n-------------------------TRI FAIT");
+            for (unsigned long long i = 0; i < tailleT; i++){
+                gmp_printf("\n RES[i].word : %Zd   RES[i].indexe : %llu",RES[i].word,RES[i].indexe);
+                gmp_printf("\n tstrie[i] : %Zd",TStrie[i]);
+            }
+        }
 
-    for (unsigned long long i = 0; i < M; ++i){
-        //mpz_init(C[i].word);
-        C[i] = 0;
-    }
-    for (unsigned long long i = 0; i < tailleT; ++i){
-        //mpz_add_ui(C[mpz_get_ui(T[i].word)].word),C[mpz_get_ui(T[i].word)].word),1);
-        // mpz_get_ui
-        C[mpz_get_ui(T[i].word)] = C[mpz_get_ui(T[i].word)] + 1;
-    }
-    for (unsigned long long i = 1; i < M; ++i){
-        C[i] = C[i] + C[i-1];
-    }
-    for (unsigned long long i = 0; i < tailleT; ++i){
-        //mpz_add_ui(C[mpz_get_ui(T[i].word)].word),C[mpz_get_ui(T[i].word)].word),1);
-        // mpz_get_ui
-        mpz_set(RES[C[mpz_get_ui(T[i].word)]-1].word,T[i].word);
-        RES[C[mpz_get_ui(T[i].word)]-1].indexe = T[i].indexe;
-        C[mpz_get_ui(T[i].word)] = C[mpz_get_ui(T[i].word)] -1;
-    }
-    printf("\n-------------------------TRI FAIT");
-    for (unsigned long long i = 0; i < tailleT; i++){
-        gmp_printf("\n RES[i].word : %Zd   RES[i].indexe : %llu",RES[i].word,RES[i].indexe);
-    } 
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Algo3(T1S,T2S,T3S,T4S,10);
-ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
-    // word M;
-    // //M = (1<<WORD_SIZE);
-    // mpz_init_set_ui(M,1);
-    // mpz_mul_2exp(M,M,WORD_SIZE);
-    // ////
-    // word tailleTableauS;
-    // //tailleTableauS = (1<<(WORD_SIZE/4));
-    // mpz_init_set_ui(tailleTableauS,1);
-    // mpz_mul_2exp(tailleTableauS,tailleTableauS,WORD_SIZE/4);
-
-
-    printf("\n DEBUT ALGO3");
-
-
-    //CHANGEMENT
-    unsigned long long M = (1ULL<<(WORD_SIZE/4));
-    unsigned long long tailleTableauS = (1<<(WORD_SIZE/4));
-    printf("\n M : %llu  tailleTableauS : %llu  ",M, tailleTableauS);
-
-    pair T2S2[tailleTableauS];
-    for (unsigned long long i = 0; i < tailleTableauS; ++i){
-        mpz_init(T2S2[i].word);
-        // T2S2[i].word = T2S[i] % M;
-        mpz_mod_ui(T2S2[i].word,T2S[i],M);
-        T2S2[i].indexe = i;
+        //CHANGEMENT : FREE 
     }
 
-    pair T4S2[tailleTableauS];
-    for (unsigned long long i = 0; i < tailleTableauS; i++){
-        mpz_init(T4S2[i].word);
-        // T4S2[i].word = T4S[i] % M;
-        mpz_mod_ui(T4S2[i].word,T4S[i],M);
-        T4S2[i].indexe = i; 
-    }
-
-    printf("\n---------list SR (M)----------------%llu",M);
-    for (unsigned long long i = 0; i < tailleTableauS; i++){
-        gmp_printf("\n T2S2[i].word : %Zd   T2S[i] : %Zd",T2S2[i].word,T2S[i]);
-        printf("  T2S2[i].indexe : %llu",T2S2[i].indexe);
-        gmp_printf("\n T4S2[i].word : %Zd   T4S[i] : %Zd",T4S2[i].word,T4S[i]);
-        printf("  T4S2[i].indexe : %llu",T4S2[i].indexe);
-    }
-    //fonctionne
-
-
-    pair* RES1 = malloc(sizeof(pair)*tailleTableauS);
-    pair* RES2 = malloc(sizeof(pair)*tailleTableauS);
-    //TRIE : Répartition uniforme des éléments (a revoir fonction aléatoire)
-    triParDenombrement(T2S2,RES1,M,tailleTableauS);
-    triParDenombrement(T4S2,RES2,M,tailleTableauS);
-
-    //penser à free T4S2 ici
 
 
 
 
 
+    //Algo3(T1S,T2S,T3S,T4S,10);
+    ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
+        // word M;
+        // //M = (1<<WORD_SIZE);
+        // mpz_init_set_ui(M,1);
+        // mpz_mul_2exp(M,M,WORD_SIZE);
+        // word tailleTableauS;
+        // //tailleTableauS = (1<<(WORD_SIZE/4));
+        // mpz_init_set_ui(tailleTableauS,1);
+        // mpz_mul_2exp(tailleTableauS,tailleTableauS,WORD_SIZE/4);
+
+        //CHANGEMENT
+        unsigned long long M = (1ULL<<(WORD_SIZE/4));
+        unsigned long long tailleTableauS = (1<<(WORD_SIZE/4));
+
+        
+        pair T2S2[tailleTableauS];
+        for (unsigned long long i = 0; i < tailleTableauS; ++i){
+            mpz_init(T2S2[i].word);
+            // T2S2[i].word = T2S[i] % M;
+            mpz_mod_ui(T2S2[i].word,T2S[i],M);
+            T2S2[i].indexe = i;
+        }
+
+        pair T4S2[tailleTableauS];
+        for (unsigned long long i = 0; i < tailleTableauS; i++){
+            mpz_init(T4S2[i].word);
+            // T4S2[i].word = T4S[i] % M;
+            mpz_mod_ui(T4S2[i].word,T4S[i],M);
+            T4S2[i].indexe = i; 
+        }
 
 
+        pair* RES1 = malloc(sizeof(pair)*tailleTableauS);
+        pair* RES2 = malloc(sizeof(pair)*tailleTableauS);
+        //TRIE : Répartition uniforme des éléments (a revoir fonction aléatoire)
+
+        triParDenombrement(T2S,T2S2,RES1,M,tailleTableauS);
+        triParDenombrement(T4S,T4S2,RES2,M,tailleTableauS);
 
 
-
-
-
-    //SOL
-    ListeSol SOL = NULL;
-
-    printf("\n--------------------------------ENTREE BOUCLE om");
-
-    Liste3 S1 = NULL;
-    for(unsigned long long om = 0; om < M; om++){
-        S1 = NULL;
-
-        //changement d'indice ici i =0 au lieu de 1
-
-        for(unsigned long long i = 0; i < tailleTableauS; i++){
-            word ol;
-            mpz_init_set(ol,T1S[i]);
-
-            word tmp_w;
-            mpz_init_set_ui(tmp_w,om);
-            mpz_sub(tmp_w,tmp_w,ol);
-            gmp_printf("\navant mod %Zd",tmp_w);
-            mpz_mod_ui(tmp_w,tmp_w,M);
-            gmp_printf("\naprès mod %Zd",tmp_w);
-            unsigned long long ot = mpz_get_ui(tmp_w);
-            for (unsigned long long j = 0; j < tailleTableauS; j++) //Claire: remplacer par recherche plus efficace
-		//la bonne valeur devrait être autour de RES1[ot]
-            {
-                if(mpz_get_ui(RES1[j].word)==ot){
-                    triple t;
-                    t.i = i;
-                    t.j = RES1[j].indexe;
-                    mpz_init(t.word);
-                    mpz_add(t.word,RES1[j].word,ol); //Revoir les valeurs
-                    S1 = AjouterListe3(t,S1);
-                    //printf("\ni : %llu   j : %llu",i,RES1[j].indexe);
+        ListeSol SOL = NULL;
+        Liste3 S1 = NULL;
+        for(unsigned long long om = 0; om < M; om++){
+            S1 = NULL;
+            for(unsigned long long i = 0; i < tailleTableauS; i++){
+                word ol;
+                mpz_init_set(ol,T1S[i]);
+                word tmp_w;
+                mpz_init_set_ui(tmp_w,om);
+                mpz_sub(tmp_w,tmp_w,ol);
+                mpz_mod_ui(tmp_w,tmp_w,M);
+                unsigned long long ot = mpz_get_ui(tmp_w);
+                for (unsigned long long j = 0; j < tailleTableauS; j++){ //Claire: remplacer par recherche plus efficace, la bonne valeur devrait être autour de RES1[ot]
+                    if(mpz_get_ui(RES1[j].word)==ot){
+                        triple t;
+                        t.i = i;
+                        t.j = RES1[j].indexe;
+                        mpz_init(t.word);
+                        mpz_add(t.word,T2S[j],ol);
+                        S1 = AjouterListe3(t,S1);
+                        gmp_printf("\ni : %llu   j : %llu   T2S : %Zd   ol  :  %Zd",i,RES1[j].indexe,T2S[j],ol);
+                    }
                 }
             }
-        }
-
-
-
-
-//TOUS LES ELEMENTS MODULO 2 N / 4 COORECT
-
-        //on affiche
-        Liste3 parcours = S1;
-        if(parcours!=NULL){
-            printf("\nListe %llu",om);
-            while(parcours->suivant!=NULL){
-                gmp_printf("\n%llu %llu %Zd",parcours->valeur.j, parcours->valeur.i, parcours->valeur.word);
-                parcours = parcours->suivant;
+            
+            //affichage
+            if(DEBUG){
+                Liste3 parcours = S1;
+                if(parcours!=NULL){
+                    printf("\nListe %llu",om);
+                    while(parcours->suivant!=NULL){
+                        gmp_printf("\n%llu %llu %Zd",parcours->valeur.j, parcours->valeur.i, parcours->valeur.word);
+                        parcours = parcours->suivant;
+                    }
+                    gmp_printf("\n%llu %llu %Zd",parcours->valeur.j, parcours->valeur.i, parcours->valeur.word);
+                }
             }
-            //SI = NULL
-            gmp_printf("\n%llu %llu %Zd",parcours->valeur.j, parcours->valeur.i, parcours->valeur.word);
-        }
 
 
+            // -------------------------- 
 
-        // -------------------------- 
+            //CHANGEMENT : TRIER LISTE S1 -> optimisation
 
-        //TRIER LISTE S1
-
-        // Liste3 parcoursS1 = S1;
-
-        // if(parcoursS1!=NULL){
-        //     Liste3 S1tri = NULL; //sauver
-            
-        //    // Liste3 S1 S1triparcours = S1tri;
-
-        //     while(parcoursS1->suivant!=NULL){
-        //         if(S1tri==NULL){
-        //             S1tri = insererentete(parcoursS1->valeur,S1tri);
-        //         }
-        //         while(mpz_cmp(S1tri->valeur.word,parcoursS1->valeur.word)){
+            // -----------------------------
 
 
+            for(unsigned long long i = 0; i < tailleTableauS; i++){
+                word ol;
+                mpz_init_set(ol,T3S[i]);
 
-        //             S1tri = S1tri->suivant;
-        //         }
+                word tmp_w;
+                mpz_init_set_ui(tmp_w,om);
+                // mpz_sub(tmp_w,tmp_w,ol);
+                // mpz_sub(tmp_w,TargetSum,tmp_w);
+                // mpz_mod_ui(tmp_w,tmp_w,M);
+                // unsigned long long ot = mpz_get_ui(tmp_w);
+
+                unsigned long long ot = (mpz_get_ui(TargetSum)-om-mpz_get_ui(ol)) % M;
+
+                for (unsigned long long j = 0; j < tailleTableauS; j++)
+                {
+                    if(mpz_get_ui(RES2[j].word)==ot){
+                        // word Tprime;
+                        // word T;
+                        // mpz_init(T);
+                        // mpz_sub(T,TargetSum,ol); //CHANGEMENT  : T3S[j]
+                        // mpz_sub(T,T,T4S[j]);
+                        // mpz_init_set(Tprime,T);
+
+                        unsigned long long T = mpz_get_ui(TargetSum)-mpz_get_ui(ol)-mpz_get_ui(T4S[j]);
+                        word Tprime;
+                        mpz_init_set_ui(Tprime,T);
 
 
-
-
-        //         parcoursS1 = parcoursS1->suivant;
-        //     }
-        // }
-
-        // -----------------------------
-
-
-        for(unsigned long long i = 0; i < tailleTableauS; i++){
-            word ol;
-            mpz_init_set(ol,T3S[i]);
-
-            word tmp_w;
-            mpz_init_set_ui(tmp_w,om);
-            mpz_sub(tmp_w,tmp_w,ol);
-            mpz_sub(tmp_w,TargetSum,tmp_w);
-            mpz_mod_ui(tmp_w,tmp_w,M);
-            unsigned long long ot = mpz_get_ui(tmp_w);
-            
-
-            for (unsigned long long j = 0; j < tailleTableauS; j++)
-            {
-                if(mpz_get_ui(RES2[j].word)==ot){
-                    word Tprime;
-                    word T;
-                    mpz_init(T);
-                    mpz_sub(T,TargetSum,ol); //CHANGEMENT  : T3S[j]
-                    mpz_sub(T,T,T4S[j]);
-                    mpz_init_set(Tprime,T);
-                    Liste3 parcoursS1 = S1;
-                    if(parcoursS1!=NULL){ //Ameliorer synthaxe...
-                        while(parcoursS1->suivant!=NULL){
+                        Liste3 parcoursS1 = S1;
+                        if(parcoursS1!=NULL){ //Ameliorer synthaxe...
+                            while(parcoursS1->suivant!=NULL){
+                                if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
+                                    solution s;
+                                    s.i = parcoursS1->valeur.i;
+                                    s.j = parcoursS1->valeur.j;
+                                    s.k = i;
+                                    s.l = RES2[j].indexe;
+                                    SOL = AjouterListeSol(s,SOL);
+                                }
+                                parcoursS1 = parcoursS1->suivant;
+                            }
                             if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
                                 solution s;
                                 s.i = parcoursS1->valeur.i;
@@ -532,42 +486,39 @@ ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
                                 s.l = RES2[j].indexe;
                                 SOL = AjouterListeSol(s,SOL);
                             }
-                            parcoursS1 = parcoursS1->suivant;
-                        }
-                        if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
-                            solution s;
-                            s.i = parcoursS1->valeur.i;
-                            s.j = parcoursS1->valeur.j;
-                            s.k = i;
-                            s.l = RES2[j].indexe;
-                            SOL = AjouterListeSol(s,SOL);
                         }
                     }
                 }
             }
         }
+        return SOL;
     }
-    return SOL;
-}
 
-void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S, word* T1x, word* T2x, word* T3x, word* T4x){
-    CreationT(T1S,T1x,ai,0);
-    CreationT(T2S,T2x,ai,WORD_SIZE/4);
-    CreationT(T3S,T3x,ai,WORD_SIZE/2);
-    CreationT(T4S,T4x,ai,3*(WORD_SIZE/4));
-    ListeSol SOL = Algo3(T1S, T2S, T3S, T4S, s);
-    //FAIRE LA CONCATENATION
-    if(SOL!=NULL){
-        while(SOL->suivant!=NULL){
-            gmp_printf("\n %Zd %Zd %Zd %Zd",T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l]);
-            SOL = SOL->suivant;
+    //Schroeppel-Shamir algorithm
+    void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S, word* T1x, word* T2x, word* T3x, word* T4x){
+        
+        CreationT(T1S,T1x,ai,0);
+        CreationT(T2S,T2x,ai,WORD_SIZE/4);
+        CreationT(T3S,T3x,ai,WORD_SIZE/2);
+        CreationT(T4S,T4x,ai,3*(WORD_SIZE/4));
+
+        ListeSol SOL = Algo3(T1S, T2S, T3S, T4S, s);
+       
+        //On affiche les solutions, à partir de leur code de gray, concacénation à effectuer
+        //CHANGEMENT Faire afficher les résultats en code binaire classique
+        if(SOL!=NULL){
+            while(SOL->suivant!=NULL){
+                gmp_printf("\n %llu %llu %llu %llu",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
+                SOL = SOL->suivant;
+            }
+            gmp_printf("\n %llu %llu %llu %llu",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
         }
-        gmp_printf("\n %Zd %Zd %Zd %Zd",T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l]);
+        else{
+            printf("\nPAS DE SOLUTIONS");
+        }
     }
-    else{
-        printf("\nPAS DE SOLUTIONS");
-    }
-}
+
+
 
 int main(){
 
@@ -578,7 +529,6 @@ int main(){
         mpz_init(ai[i]);
     }
 
-
     //On génére les éléments du vecteur a
     bool choixDefDeA = true;
 
@@ -587,12 +537,8 @@ int main(){
         generationAleaA(ai);
     }
     else{
-        //generationManuel();  // + chercher dans fichier et saisir le résultat dedans
+        //generationManuel();  //CHANGEMENT + chercher dans fichier et saisir le résultat dedans
     }
-
-
-    //---------------------ALORITHME 1----------------------------
-    //word* xi = NULL; ????????
     
     unsigned long long tailleTableauS = (1<<(WORD_SIZE/4));
     // word tailleTableauS;
@@ -609,7 +555,7 @@ int main(){
 
     word* T = malloc(sizeof(word)*tailleTableauS*4);
     for(int i=0;i<tailleTableauS*4;++i){
-        mpz_init(T[i]); //DE même pour l'incrémaentation des ints...
+        mpz_init(T[i]);
     }
     // word tailleTableauS4;
     // mpz_init(tailleTableauS4);
@@ -650,7 +596,7 @@ int main(){
 
     Algo1(ai,s,T,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
 
-    //Dans une fonction a faire pour tous !!!!!
+    //Mettre dans une fonction, le faire pour tous !!!!!
     for(int i=0;i<WORD_SIZE;++i){
         mpz_clear(ai[i]);
     }
@@ -658,5 +604,5 @@ int main(){
     //FAIRE LES FREE, METTRE EN MALLOC, CHANGER M EN GMP
     // + chercher dans fichier et saisir le résultat dedans
 
-    //S1 A TRANSFORMER EN TABLEAU
+    //S1 A TRANSFORMER EN TABLEAU   -> gain de temps
 }
