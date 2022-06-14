@@ -17,7 +17,7 @@
 
 
 //valeur de la taille de n
-#define WORD_SIZE 8
+#define WORD_SIZE 64
 
 //Activer l'affichage
 #define DEBUG 0
@@ -138,7 +138,7 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
         for(int i = 0; i<WORD_SIZE; ++i){
             //CHANGEMENT
             //%(max-min+1) + min;
-            mpz_set_ui(ai[i],rand() % 10);//(1ULL<<WORD_SIZE));
+            mpz_set_ui(ai[i],rand() % 100);//(1ULL<<WORD_SIZE));
         }
         afficherA(ai);
     }
@@ -266,7 +266,7 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
         mpz_set_ui(TX[0],0);
         //mpz_set_ui(TX[i],0);
 
-        for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
+        for(unsigned long long i = 0;i<(1ULL<<(WORD_SIZE/4));++i){
             if(tab.n!=0){
 
                 // //On cherche l'information de quel bit a changé entre l'actuel représentation de gray, et l'ancienne (boucle précédente)
@@ -396,7 +396,7 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
 
         //CHANGEMENT
         unsigned long long M = (1ULL<<(WORD_SIZE/4));
-        unsigned long long tailleTableauS = (1<<(WORD_SIZE/4));
+        unsigned long long tailleTableauS = (1ULL<<(WORD_SIZE/4));
 
         
         pair T2S2[tailleTableauS];
@@ -575,7 +575,7 @@ int main(){
         //generationManuel();  //CHANGEMENT + chercher dans fichier et saisir le résultat dedans
     }
     
-    unsigned long long tailleTableauS = (1<<(WORD_SIZE/4));
+    unsigned long long tailleTableauS = (1ULL<<(WORD_SIZE/4));
     // word tailleTableauS;
     // mpz_init(tailleTableauS);
     // mpz_set_ui(tailleTableauS,1);
@@ -627,7 +627,7 @@ int main(){
 
     word s; //TARGETSUM
     mpz_init(s);
-    mpz_set_ui(s,10);
+    mpz_set_ui(s,100);
 
     Algo1(ai,s,T,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
 
