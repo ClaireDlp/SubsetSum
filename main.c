@@ -17,7 +17,7 @@
 
 
 //valeur de la taille de n
-#define WORD_SIZE 64
+#define WORD_SIZE 8
 
 //Activer l'affichage
 #define DEBUG 0
@@ -138,7 +138,7 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
         for(int i = 0; i<WORD_SIZE; ++i){
             //CHANGEMENT
             //%(max-min+1) + min;
-            mpz_set_ui(ai[i],rand() % 100);//(1ULL<<WORD_SIZE));
+            mpz_set_ui(ai[i],rand() % 10);//(1ULL<<WORD_SIZE));
         }
         afficherA(ai);
     }
@@ -256,6 +256,8 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
 
     //Fonction qui permet de créer les différents tableaux utilisé dans l'algorithme de Schroeppel-Shamir algotithm
     void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
+
+        printf("\nCreationT");
 
         graytab tab; // n, nprec, bitchangement et pos ou neg
         tab.n = 0;
@@ -427,6 +429,7 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
         ListeSol SOL = NULL;
         Liste3 S1 = NULL;
         for(unsigned long long om = 0; om < M; om++){
+            printf("\n%llu",om);
             S1 = NULL;
             for(unsigned long long i = 0; i < tailleTableauS; i++){
                 word ol;
@@ -627,7 +630,7 @@ int main(){
 
     word s; //TARGETSUM
     mpz_init(s);
-    mpz_set_ui(s,100);
+    mpz_set_ui(s,10);
 
     Algo1(ai,s,T,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
 
