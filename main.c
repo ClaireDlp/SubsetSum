@@ -9,9 +9,7 @@
 //|___________________________________________________________________________________|//
 
 /* TODO: 
--> libération de la mémoire
--> fonction de test
--> séparer algo3 en deux fonctions
+-> fonction de test                 
 -> compilation séparée + makefile
 -> recherche plus efficace dans algo3
 */
@@ -25,11 +23,10 @@
 
 
 //valeur de la taille de n
-<<<<<<< HEAD
 #define WORD_SIZE 8
-=======
-#define WORD_SIZE 32
->>>>>>> 7a7a6714a6b869d9403e78191e39f6b6bcb07a2e
+
+//Valeur à trouver par sommation
+#define TARGET 10
 
 //Activer l'affichage
 #define DEBUG 0
@@ -73,7 +70,7 @@ typedef struct cellule{
 } *Liste3;
 
 Liste3 AjouterListe3(triple t, Liste3 L){
-    Liste3 lst = malloc(sizeof(struct cellule)); //revoir
+    Liste3 lst = malloc(sizeof(struct cellule));
     lst->valeur = t;
     lst->suivant = L;
     return lst;
@@ -97,26 +94,6 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
     lst->suivant = L;
     return lst;
 }
-
-
-
-// //Fonction peremettant d'insérer en tête de liste un Arbre 
-// Liste3 insererentete(triple t, Liste3 lst) {
-//     Liste3 L = malloc(sizeof(struct cellule));
-//     L->valeur = t;
-//     L->suivant = lst;
-//     return L;
-// }
-
-// //Fonction peremettant d'insérer au milieu d'une liste un Arbre 
-// Liste3 insereraumilieu(triple t, Liste3 lst1, Liste3 lst2) {
-//     Liste3 L = malloc(sizeof(struct cellule));
-//     L->valeur= t;
-//     L->suivant = lst2;
-//     lst1->suivant=L;
-//     return lst1;
-// }
-
 
 
 //Fonctions de paramétrage avant le début des opérations du programme
@@ -266,10 +243,38 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
 // }
 
 
+
+    //ERREUR : quitter le prog si erreur..
+    void liberation(word* w,unsigned long long N){
+        for (unsigned long long i = 0; i < N; ++i){
+            mpz_clear(w[i]);
+        }
+        free(w);
+    }
+
+    //CHANGEMENT : Voir si on peut associer cette fonction à liberation()
+    void liberationPair(pair* w,unsigned long long N){
+        for (unsigned long long i = 0; i < N; ++i){
+            mpz_clear(w[i].word);
+        }
+        free(w);
+    }
+
+    void liberer(word* ai,word* T1S,word* T2S,word* T3S,word* T4S,word* T1x,word* T2x,word* T3x,word* T4x,unsigned long long N){
+        liberation(ai,N);
+        liberation(T1S,N);
+        liberation(T2S,N);
+        liberation(T3S,N);
+        liberation(T4S,N);
+        liberation(T1x,N);
+        liberation(T2x,N);
+        liberation(T3x,N);
+        liberation(T4x,N);
+    }
+
+
     //Fonction qui permet de créer les différents tableaux utilisé dans l'algorithme de Schroeppel-Shamir algotithm
     void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
-
-        printf("\nCreationT");
 
         graytab tab; // n, nprec, bitchangement et pos ou neg
         tab.n = 0;
@@ -370,21 +375,17 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
             }
         }
 
-        //CHANGEMENT : FREE 
+        //Libération de l'espace libre
+        liberation(TStrie,tailleT);
+        free(C);
     }
 
 
     //Fonction qui permet de concaténer 4 valeur word et affiche une solution de l'algorithme de Schroeppel-Shamir
     //CHANGEMENT : valeur à retourner
     void concatenation(word w1, word w2, word w3, word w4, unsigned long long taille){
-        word res;
-        mpz_init(res);
-        word ww1;
-        mpz_init(ww1);
-        word ww2;
-        mpz_init(ww2);
-        word ww3;
-        mpz_init(ww3);
+        word res, ww1, ww2, ww3;
+        mpz_inits(res,ww1,ww2,ww3,NULL);
 
         mpz_mul_2exp(ww1,w1,taille*3);
         mpz_mul_2exp(ww2,w2,taille*2);
@@ -395,138 +396,87 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
         mpz_ior(res,res,ww3);
         mpz_ior(res,res,w4);
         gmp_printf(" solution : %Zd",res);
+
+        //Libération de l'espace libre
+        mpz_clears(res,ww1,ww2,ww3,NULL);
     }
 
-    //Algorithme 3 Modular 4-Way merge routine
-    ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum){
-        // word M;
-        // //M = (1<<WORD_SIZE);
-        // mpz_init_set_ui(M,1);
-        // mpz_mul_2exp(M,M,WORD_SIZE);
-        // word tailleTableauS;
-        // //tailleTableauS = (1<<(WORD_SIZE/4));
-        // mpz_init_set_ui(tailleTableauS,1);
-        // mpz_mul_2exp(tailleTableauS,tailleTableauS,WORD_SIZE/4);
 
-        //CHANGEMENT
-        unsigned long long M = (1ULL<<(WORD_SIZE/4));
-        unsigned long long tailleTableauS = (1ULL<<(WORD_SIZE/4));
-
+    Liste3 join(Liste3 S1, word* T1S, word* T2S, pair* RES1, unsigned long long tailleTableauS, unsigned long long M, unsigned long long om){
+        S1 = NULL;
+        word ol, tmp_w;
+        mpz_inits(ol,tmp_w,NULL);
+        for(unsigned long long i = 0; i < tailleTableauS; i++){
+            mpz_set(ol,T1S[i]);
+            mpz_set_ui(tmp_w,om);
+            mpz_sub(tmp_w,tmp_w,ol);
+            mpz_mod_ui(tmp_w,tmp_w,M);
+            unsigned long long ot = mpz_get_ui(tmp_w);
+            for (unsigned long long j = 0; j < tailleTableauS; j++){ //Claire: remplacer par recherche plus efficace, la bonne valeur devrait être autour de RES1[ot]
+                if(mpz_get_ui(RES1[j].word)==ot){
+                    triple t;
+                    t.i = i;
+                    t.j = RES1[j].indexe;
+                    mpz_init(t.word);
+                    mpz_add(t.word,T2S[j],ol);
+                    S1 = AjouterListe3(t,S1);
+                }
+            }
+        }
         
-        pair T2S2[tailleTableauS];
-        for (unsigned long long i = 0; i < tailleTableauS; ++i){
-            mpz_init(T2S2[i].word);
-            // T2S2[i].word = T2S[i] % M;
-            mpz_mod_ui(T2S2[i].word,T2S[i],M);
-            T2S2[i].indexe = i;
-        }
-
-        pair T4S2[tailleTableauS];
-        for (unsigned long long i = 0; i < tailleTableauS; i++){
-            mpz_init(T4S2[i].word);
-            // T4S2[i].word = T4S[i] % M;
-            mpz_mod_ui(T4S2[i].word,T4S[i],M);
-            T4S2[i].indexe = i; 
-        }
-
-
-        pair* RES1 = malloc(sizeof(pair)*tailleTableauS);
-        pair* RES2 = malloc(sizeof(pair)*tailleTableauS);
-        //TRIE : Répartition uniforme des éléments (a revoir fonction aléatoire)
-
-        triParDenombrement(T2S,T2S2,RES1,M,tailleTableauS);
-        triParDenombrement(T4S,T4S2,RES2,M,tailleTableauS);
-
-
-        ListeSol SOL = NULL;
-        Liste3 S1 = NULL;
-        for(unsigned long long om = 0; om < M; om++){
-            printf("\n%llu",om);
-            S1 = NULL;
-            for(unsigned long long i = 0; i < tailleTableauS; i++){
-                word ol;
-                mpz_init_set(ol,T1S[i]);
-                word tmp_w;
-                mpz_init_set_ui(tmp_w,om);
-                mpz_sub(tmp_w,tmp_w,ol);
-                mpz_mod_ui(tmp_w,tmp_w,M);
-                unsigned long long ot = mpz_get_ui(tmp_w);
-                for (unsigned long long j = 0; j < tailleTableauS; j++){ //Claire: remplacer par recherche plus efficace, la bonne valeur devrait être autour de RES1[ot]
-                    if(mpz_get_ui(RES1[j].word)==ot){
-                        triple t;
-                        t.i = i;
-                        t.j = RES1[j].indexe;
-                        mpz_init(t.word);
-                        mpz_add(t.word,T2S[j],ol);
-                        S1 = AjouterListe3(t,S1);
-                    }
-                }
-            }
-            
-            //affichage
-            if(DEBUG){
-                Liste3 parcours = S1;
-                if(parcours!=NULL){
-                    printf("\nListe %llu",om);
-                    while(parcours->suivant!=NULL){
-                        gmp_printf("\n%llu %llu %Zd",parcours->valeur.j, parcours->valeur.i, parcours->valeur.word);
-                        parcours = parcours->suivant;
-                    }
+        //affichage
+        if(DEBUG){
+            Liste3 parcours = S1;
+            if(parcours!=NULL){
+                printf("\nListe %llu",om);
+                while(parcours->suivant!=NULL){
                     gmp_printf("\n%llu %llu %Zd",parcours->valeur.j, parcours->valeur.i, parcours->valeur.word);
+                    parcours = parcours->suivant;
                 }
+                gmp_printf("\n%llu %llu %Zd",parcours->valeur.j, parcours->valeur.i, parcours->valeur.word);
             }
+        }
+
+        //Liération de l'espace libre
+        mpz_clears(ol,tmp_w,NULL);
+        
+        return S1;
+    }
+
+    ListeSol solver(ListeSol SOL,Liste3 S1, word* T3S, word* T4S, pair* RES2, unsigned long long tailleTableauS,word TargetSum, unsigned long long M, unsigned long long om){
+        word ol, tmp_w, Tprime;
+        mpz_inits(ol,tmp_w,Tprime,NULL);
+        
+        for(unsigned long long i = 0; i < tailleTableauS; i++){
+            mpz_set(ol,T3S[i]);
+            mpz_set_ui(tmp_w,om);
+            // mpz_sub(tmp_w,tmp_w,ol);
+            // mpz_sub(tmp_w,TargetSum,tmp_w);
+            // mpz_mod_ui(tmp_w,tmp_w,M);
+            // unsigned long long ot = mpz_get_ui(tmp_w);
+
+            //CHANGEMENT
+            unsigned long long ot = (mpz_get_ui(TargetSum)-om-mpz_get_ui(ol)) % M;
+
+            for (unsigned long long j = 0; j < tailleTableauS; j++)
+            {
+                if(mpz_get_ui(RES2[j].word)==ot){
+                    // word Tprime;
+                    // word T;
+                    // mpz_init(T);
+                    // mpz_sub(T,TargetSum,ol); //CHANGEMENT  : T3S[j]
+                    // mpz_sub(T,T,T4S[j]);
+                    // mpz_init_set(Tprime,T);
+
+                    //CHANGEMENT
+                    unsigned long long T = mpz_get_ui(TargetSum)-mpz_get_ui(ol)-mpz_get_ui(T4S[j]);
+                    //mpz_init(Tprime);
+                    mpz_set_ui(Tprime,T);
 
 
-            // -------------------------- 
-
-            //CHANGEMENT : TRIER LISTE S1 -> optimisation
-
-            // -----------------------------
-
-		//Claire: Séparer cette fonction: join et 
-
-
-            for(unsigned long long i = 0; i < tailleTableauS; i++){
-                word ol;
-                mpz_init_set(ol,T3S[i]);
-
-                word tmp_w;
-                mpz_init_set_ui(tmp_w,om);
-                // mpz_sub(tmp_w,tmp_w,ol);
-                // mpz_sub(tmp_w,TargetSum,tmp_w);
-                // mpz_mod_ui(tmp_w,tmp_w,M);
-                // unsigned long long ot = mpz_get_ui(tmp_w);
-
-                unsigned long long ot = (mpz_get_ui(TargetSum)-om-mpz_get_ui(ol)) % M;
-
-                for (unsigned long long j = 0; j < tailleTableauS; j++)
-                {
-                    if(mpz_get_ui(RES2[j].word)==ot){
-                        // word Tprime;
-                        // word T;
-                        // mpz_init(T);
-                        // mpz_sub(T,TargetSum,ol); //CHANGEMENT  : T3S[j]
-                        // mpz_sub(T,T,T4S[j]);
-                        // mpz_init_set(Tprime,T);
-
-                        unsigned long long T = mpz_get_ui(TargetSum)-mpz_get_ui(ol)-mpz_get_ui(T4S[j]);
-                        word Tprime;
-                        mpz_init_set_ui(Tprime,T);
-
-
-                        Liste3 parcoursS1 = S1;
-                        if(parcoursS1!=NULL){ //Ameliorer synthaxe...
-                            while(parcoursS1->suivant!=NULL){
-                                if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
-                                    solution s;
-                                    s.i = parcoursS1->valeur.i;
-                                    s.j = parcoursS1->valeur.j;
-                                    s.k = i;
-                                    s.l = RES2[j].indexe;
-                                    SOL = AjouterListeSol(s,SOL);
-                                }
-                                parcoursS1 = parcoursS1->suivant;
-                            }
+                    Liste3 parcoursS1 = S1;
+                    if(parcoursS1!=NULL){
+                        while(parcoursS1->suivant!=NULL){
                             if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
                                 solution s;
                                 s.i = parcoursS1->valeur.i;
@@ -535,11 +485,81 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
                                 s.l = RES2[j].indexe;
                                 SOL = AjouterListeSol(s,SOL);
                             }
+                            parcoursS1 = parcoursS1->suivant;
+                        }
+                        if(mpz_get_ui(parcoursS1->valeur.word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
+                            solution s;
+                            s.i = parcoursS1->valeur.i;
+                            s.j = parcoursS1->valeur.j;
+                            s.k = i;
+                            s.l = RES2[j].indexe;
+                            SOL = AjouterListeSol(s,SOL);
                         }
                     }
                 }
             }
         }
+        mpz_clears(ol,tmp_w,Tprime,NULL);
+        return SOL;
+    }
+
+
+
+    //Algorithme 3 Modular 4-Way merge routine
+    ListeSol Algo3(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum, ListeSol SOL){
+
+        //CHANGEMENT
+        unsigned long long M = (1ULL<<(WORD_SIZE/4));
+        unsigned long long tailleTableauS = (1ULL<<(WORD_SIZE/4));
+
+        pair* T2S2 = malloc(sizeof(pair)*tailleTableauS);
+        for (unsigned long long i = 0; i < tailleTableauS; ++i){
+            mpz_init(T2S2[i].word);
+            mpz_mod_ui(T2S2[i].word,T2S[i],M);
+            T2S2[i].indexe = i;
+        }
+
+        pair* T4S2 = malloc(sizeof(pair)*tailleTableauS);
+        for (unsigned long long i = 0; i < tailleTableauS; i++){
+            mpz_init(T4S2[i].word);
+            mpz_mod_ui(T4S2[i].word,T4S[i],M);
+            T4S2[i].indexe = i; 
+        }
+
+
+        pair* RES1 = malloc(sizeof(pair)*tailleTableauS);
+        pair* RES2 = malloc(sizeof(pair)*tailleTableauS);
+
+        //CHANGEMENT : Regarder si on peut éviter de déclarer T2S2 et T4S2 pour gain de mémoire et calcul
+        //TRIE : Répartition uniforme des éléments (a revoir fonction aléatoire)
+        triParDenombrement(T2S,T2S2,RES1,M,tailleTableauS);
+        liberationPair(T2S2,tailleTableauS);
+        triParDenombrement(T4S,T4S2,RES2,M,tailleTableauS);
+        liberationPair(T4S2,tailleTableauS);
+
+        Liste3 S1 = NULL;
+        for(unsigned long long om = 0; om < M; om++){
+            
+            S1 = join(S1,T1S,T2S,RES1,tailleTableauS,M,om);
+
+            //CHANGEMENT : TRIER LISTE S1 -> optimisation
+            
+            SOL = solver(SOL,S1,T3S,T4S,RES2,tailleTableauS,TargetSum,M,om);
+        }
+
+        //Libération de la mémoire
+        liberationPair(RES1,tailleTableauS);
+        liberationPair(RES2,tailleTableauS);
+
+        if(S1!=NULL){
+            while(S1->suivant!=NULL){
+                mpz_clear(S1->valeur.word);
+                S1 = S1->suivant;
+            }
+            mpz_clear(S1->valeur.word);
+        }
+        free(S1);
+
         return SOL;
     }
 
@@ -551,9 +571,9 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
         CreationT(T3S,T3x,ai,WORD_SIZE/2);
         CreationT(T4S,T4x,ai,3*(WORD_SIZE/4));
 
-        ListeSol SOL = Algo3(T1S, T2S, T3S, T4S, s);
+        ListeSol SOL = NULL;
+        SOL = Algo3(T1S, T2S, T3S, T4S, s, SOL);
 
-       
         //On affiche les solutions, à partir de leur code de gray, concaténation à effectuer
         //CHANGEMENT Faire afficher les résultats en code binaire classique
         if(SOL!=NULL){
@@ -568,8 +588,8 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
         else{
             printf("\nPAS DE SOLUTIONS");
         }
+        free(SOL);
     }
-
 
 
 int main(){
@@ -592,29 +612,8 @@ int main(){
         //generationManuel();  //CHANGEMENT + chercher dans fichier et saisir le résultat dedans
     }
     
+
     unsigned long long tailleTableauS = (1ULL<<(WORD_SIZE/4));
-    // word tailleTableauS;
-    // mpz_init(tailleTableauS);
-    // mpz_set_ui(tailleTableauS,1);
-    // mpz_mul_2exp(tailleTableauS,tailleTableauS,WORD_SIZE/4);
-
-
-    //unsigned long long tailleTableaux = (tailleTableauS*(WORD_SIZE/4));
-    // word tailleTableaux;
-    // mpz_init(tailleTableaux);
-    // mpz_mul_ui(tailleTableaux,tailleTableauS,WORD_SIZE/4);
-
-
-
-    // word tailleTableauS4;
-    // mpz_init(tailleTableauS4);
-    // mpz_mul_ui(tailleTableauS4,tailleTableauS,4);
-    // word T[tailleTableauS4];
-    // word i;
-    // mpz_init(i);
-    // for(mpz_set_ui(i,0);mpz_cmp(i,tailleTableauS4);mpz_add_ui(i,i,1)){
-    //     mpz_init(T[i]);
-    // }
 
     word* T1S = malloc(sizeof(word)*tailleTableauS);
     word* T2S = malloc(sizeof(word)*tailleTableauS);
@@ -640,18 +639,19 @@ int main(){
     }
 
     word s; //TARGETSUM
-    mpz_init(s);
-    mpz_set_ui(s,10);
+    mpz_init_set_ui(s,TARGET);
 
     Schroeppel_Shamir(ai,s,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
 
-    //Mettre dans une fonction, le faire pour tous !!!!!
-    for(int i=0;i<WORD_SIZE;++i){
-        mpz_clear(ai[i]);
-    }
+    //Libération de la mémoire
+    mpz_clear(s);
+    liberer(ai,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x,tailleTableauS);
 
-    //FAIRE LES FREE, METTRE EN MALLOC, CHANGER M EN GMP
+
+    //FAIRE LES FREE, METTRE EN MALLOC, CHANGER M EN GMP (voir si M en llu est opti)
     // + chercher dans fichier et saisir le résultat dedans
 
     //S1 A TRANSFORMER EN TABLEAU   -> gain de temps
+
+    //regarder si mpz_clear recommandé en fin de prog
 }
