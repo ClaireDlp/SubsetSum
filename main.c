@@ -8,6 +8,14 @@
 //|for hard knapsacks                                                                 |//
 //|___________________________________________________________________________________|//
 
+/* TODO: 
+-> libération de la mémoire
+-> fonction de test
+-> séparer algo3 en deux fonctions
+-> compilation séparée + makefile
+-> recherche plus efficace dans algo3
+*/
+
 
 #include <stdio.h>
 #include <math.h>
@@ -17,7 +25,11 @@
 
 
 //valeur de la taille de n
+<<<<<<< HEAD
 #define WORD_SIZE 8
+=======
+#define WORD_SIZE 32
+>>>>>>> 7a7a6714a6b869d9403e78191e39f6b6bcb07a2e
 
 //Activer l'affichage
 #define DEBUG 0
@@ -471,6 +483,8 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
 
             // -----------------------------
 
+		//Claire: Séparer cette fonction: join et 
+
 
             for(unsigned long long i = 0; i < tailleTableauS; i++){
                 word ol;
@@ -530,7 +544,7 @@ ListeSol AjouterListeSol(solution s, ListeSol L){
     }
 
     //Schroeppel-Shamir algorithm
-    void Algo1(word* ai, word s, word* T, word* T1S, word* T2S, word* T3S, word* T4S, word* T1x, word* T2x, word* T3x, word* T4x){
+    void Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3S, word* T4S, word* T1x, word* T2x, word* T3x, word* T4x){
         
         CreationT(T1S,T1x,ai,0);
         CreationT(T2S,T2x,ai,WORD_SIZE/4);
@@ -585,16 +599,13 @@ int main(){
     // mpz_mul_2exp(tailleTableauS,tailleTableauS,WORD_SIZE/4);
 
 
-    unsigned long long tailleTableaux = (tailleTableauS*(WORD_SIZE/4));
+    //unsigned long long tailleTableaux = (tailleTableauS*(WORD_SIZE/4));
     // word tailleTableaux;
     // mpz_init(tailleTableaux);
     // mpz_mul_ui(tailleTableaux,tailleTableauS,WORD_SIZE/4);
 
 
-    word* T = malloc(sizeof(word)*tailleTableauS*4);
-    for(int i=0;i<tailleTableauS*4;++i){
-        mpz_init(T[i]);
-    }
+
     // word tailleTableauS4;
     // mpz_init(tailleTableauS4);
     // mpz_mul_ui(tailleTableauS4,tailleTableauS,4);
@@ -617,11 +628,11 @@ int main(){
         mpz_init(T4S[i]);
     }
 
-    word* T1x = malloc(sizeof(word)*tailleTableaux);
-    word* T2x = malloc(sizeof(word)*tailleTableaux);
-    word* T3x = malloc(sizeof(word)*tailleTableaux);
-    word* T4x = malloc(sizeof(word)*tailleTableaux);
-    for(int i=0;i<tailleTableaux;++i){
+    word* T1x = malloc(sizeof(word)*tailleTableauS);
+    word* T2x = malloc(sizeof(word)*tailleTableauS);
+    word* T3x = malloc(sizeof(word)*tailleTableauS);
+    word* T4x = malloc(sizeof(word)*tailleTableauS);
+    for(int i=0;i<tailleTableauS;++i){
         mpz_init(T1x[i]);
         mpz_init(T2x[i]);
         mpz_init(T3x[i]);
@@ -632,7 +643,7 @@ int main(){
     mpz_init(s);
     mpz_set_ui(s,10);
 
-    Algo1(ai,s,T,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
+    Schroeppel_Shamir(ai,s,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x);
 
     //Mettre dans une fonction, le faire pour tous !!!!!
     for(int i=0;i<WORD_SIZE;++i){
