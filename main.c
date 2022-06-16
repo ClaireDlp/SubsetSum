@@ -18,6 +18,11 @@
 -> voir les "CHANGEMENT"
 */
 
+/*TODO Claire:
+-> TS2 à remplacer par T2S2 pour avoir des pairs sur les tableaux qu'on trie
+-> Garder 1 seul TX qui correspond au Code de Gray (Nécessaire?)
+*/
+
 #include "word.h"
 
 int main(){
