@@ -31,11 +31,16 @@ int main(){
     mpz_init(variable1);
     mpz_add_ui(variable1,variable1,5);
     gmp_printf("\n%Zd",variable1);
-    mpz_mul_2exp(variable1,variable1,1);
+    mpz_fdiv_q_2exp(variable1,variable1,1);
     gmp_printf("\n%Zd",variable1);
-    mpz_t tailleTableauS;
-    mpz_init(tailleTableauS);
-    mpz_set_ui(tailleTableauS,1);
-    mpz_mul_2exp(tailleTableauS,tailleTableauS,(WORD_SIZE/4));
-    gmp_printf("\n%Zd",tailleTableauS);
+    // mpz_mul_2exp(variable1,variable1,1);
+    // gmp_printf("\n%Zd",variable1);
+    // mpz_t tailleTableauS;
+    // mpz_init(tailleTableauS);
+    // mpz_set_ui(tailleTableauS,1);
+    // mpz_mul_2exp(tailleTableauS,tailleTableauS,(WORD_SIZE/4));
+    // gmp_printf("\n%Zd",tailleTableauS);
+
+
+
 }
