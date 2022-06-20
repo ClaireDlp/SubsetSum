@@ -1,7 +1,7 @@
 #include "word.h"
 
 //Fonction qui permet de créer les différents tableaux utilisé dans l'algorithme de Schroeppel-Shamir algotithm
-void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
+void CreationT(word* TS, word* tabGray, word* ai, unsigned long long place){
 
     graytab tab; // n, nprec, bitchangement et pos ou neg
     tab.n = 0;
@@ -9,8 +9,8 @@ void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
     tab.bitChangement = 0;
     tab.signe = 0;
 
-    mpz_set_ui(TX[0],0);
-    //mpz_set_ui(TX[i],0);
+    mpz_set_ui(tabGray[0],0);
+    //mpz_set_ui(tabGray[i],0);
 
     for(unsigned long long i = 0;i<(1ULL<<(WORD_SIZE/4));++i){
         if(tab.n!=0){
@@ -28,27 +28,27 @@ void CreationT(word* TS, word* TX, word* ai, unsigned long long place){
             if(tab.signe==0){
                 //TS[i]= TS[i-1] +ai[bitChangement-1+place];
                 mpz_add(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
-                //TX[i] = n;
-                mpz_set_ui(TX[i],tab.n);
+                //tabGray[i] = n;
+                mpz_set_ui(tabGray[i],tab.n);
             }
             else{
                 mpz_sub(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
-                //TX[i] = n;
-                mpz_set_ui(TX[i],tab.n);
+                //tabGray[i] = n;
+                mpz_set_ui(tabGray[i],tab.n);
             }
             tab.nPrec = tab.n;
         }
         else{
             mpz_set_ui(TS[i],0);// i = 0
-            //mpz_set_ui(TX[i],0);// i = 0
-            mpz_set_ui(TX[0],0);
+            //mpz_set_ui(tabGray[i],0);// i = 0
+            mpz_set_ui(tabGray[0],0);
             tab.n=1;
         }
     }
     if(DEBUG){
         printf("\n CREATION DE T : ");
         for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
-            gmp_printf("\nTS[%llu]=%Zd TX[%llu]=%Zd",i,TS[i],i,TX[i]);
+            gmp_printf("\nTS[%llu]=%Zd tabGray[%llu]=%Zd",i,TS[i],i,tabGray[i]);
             //gmp_printf("\n%Zd",TS[i]);s
         }
     }  
@@ -81,12 +81,12 @@ ListeSolConca concatenation(word w1, word w2, word w3, word w4, unsigned long lo
 
 
 //Schroeppel-Shamir algorithm
-ListeSolConca Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3S, word* T4S, word* T1x, word* T2x, word* T3x, word* T4x, ListeSolConca Solution){
+ListeSolConca Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3S, word* T4S, word* tabGray, ListeSolConca Solution){
     
-    CreationT(T1S,T1x,ai,0);
-    CreationT(T2S,T2x,ai,WORD_SIZE/4);
-    CreationT(T3S,T3x,ai,WORD_SIZE/2);
-    CreationT(T4S,T4x,ai,3*(WORD_SIZE/4));
+    CreationT(T1S,tabGray,ai,0);
+    CreationT(T2S,tabGray,ai,WORD_SIZE/4);
+    CreationT(T3S,tabGray,ai,WORD_SIZE/2);
+    CreationT(T4S,tabGray,ai,3*(WORD_SIZE/4));
 
     ListeSol SOL = NULL;
     SOL = Modular_merge(T1S, T2S, T3S, T4S, s, SOL);
@@ -95,12 +95,12 @@ ListeSolConca Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3
     //CHANGEMENT Faire afficher les résultats en code binaire classique
     if(SOL!=NULL){
         while(SOL->suivant!=NULL){
-            gmp_printf("\n %Zd %Zd %Zd %Zd",T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l]);
-            Solution = concatenation(T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l],WORD_SIZE/4,Solution);
+            gmp_printf("\n %Zd %Zd %Zd %Zd",tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l]);
+            Solution = concatenation(tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l],WORD_SIZE/4,Solution);
             SOL = SOL->suivant;
         }
-        gmp_printf("\n %Zd %Zd %Zd %Zd",T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l]);
-        Solution = concatenation(T1x[SOL->valeur.i],T2x[SOL->valeur.j],T3x[SOL->valeur.k],T4x[SOL->valeur.l],WORD_SIZE/4,Solution);
+        gmp_printf("\n %Zd %Zd %Zd %Zd",tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l]);
+        Solution = concatenation(tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l],WORD_SIZE/4,Solution);
     }
     else{
         Solution = NULL;

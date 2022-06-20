@@ -89,7 +89,7 @@ unsigned long long dichotomie(unsigned long long ot, pair* RES, unsigned long lo
 
 
 
-triple* join(triple* S1, word* T1S, word* T2S, pair* RES1, unsigned long long tailleTableauS, unsigned long long M, unsigned long long om, unsigned long long* tailleS1, unsigned long long* nbReallocS1, unsigned long long* indiceS1){
+triple* join(triple* S1, word* T1S, word* T2S, pair* RES1, unsigned long long tailleTableauS, unsigned long long M, unsigned long long om, unsigned long long* tailleS1, unsigned long long* nbReallocS1){
     word ol, tmp_w;
     mpz_inits(ol,tmp_w,NULL);
     for(unsigned long long i = 0; i < tailleTableauS; i++){
@@ -221,9 +221,6 @@ ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSu
 
     unsigned long long tailleS1 = 0, nbReallocS1 = 0;
 
-    //Permet de contenir le dernier indice de la cellule de S1 défini
-    unsigned long long indiceS1 = 0;
-
     triple* S1 = malloc(tailleTableauS*sizeof(triple));
     if (S1 == NULL){
         printf("\nErreur");
@@ -236,14 +233,14 @@ ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSu
     for(unsigned long long om = 0; om < M; om++){
 
         tailleS1 = 0;
-        S1 = join(S1,T1S,T2S,RES1,tailleTableauS,M,om,&tailleS1,&nbReallocS1,&indiceS1);
+        S1 = join(S1,T1S,T2S,RES1,tailleTableauS,M,om,&tailleS1,&nbReallocS1);
         if (S1 == NULL){
             printf("\nErreur");
             return NULL;
         }
         //CHANGEMENT : TRIER LISTE S1 -> optimisation
         SOL = solver(SOL,S1,T3S,T4S,RES2,tailleTableauS,TargetSum,M,om,&tailleS1);
-        //printf("\n %llu",om);
+       // printf("\n %llu",om);
     }
 
     //Libération de la mémoire

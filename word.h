@@ -74,14 +74,14 @@ graytab gray(unsigned long long, graytab);
 //free.c
 void liberation(word*, unsigned long long);
 void liberationPair(pair*, unsigned long long);
-void liberer(word*, word*, word*, word*, word*, word*, word*, word*, word*, ListeSolConca, unsigned long long);
+void liberer(word*, word*, word*, word*, word*, word*, ListeSolConca, unsigned long long);
 
 //verif.c
 int verificationSol(word*, word, word);
 
 //modular_merge.c
 void triParDenombrement(word*, pair*, pair*, unsigned long long, unsigned long long);
-triple* join(triple*, word*, word*, pair*, unsigned long long, unsigned long long, unsigned long long, unsigned long long*, unsigned long long*, unsigned long long*);
+triple* join(triple*, word*, word*, pair*, unsigned long long, unsigned long long, unsigned long long, unsigned long long*, unsigned long long*);
 ListeSol solver(ListeSol, triple*, word*, word*, pair*, unsigned long long, word, unsigned long long, unsigned long long, unsigned long long*);
 ListeSol Modular_merge(word*, word*, word*, word*, word, ListeSol);
 unsigned long long dichotomie(unsigned long long, pair*, unsigned long long);
@@ -93,7 +93,7 @@ ListeSolConca AjouterListeSolConca(word, ListeSolConca);
 //Schroeppel_Shamir.c
 void CreationT(word*, word*, word*, unsigned long long);
 ListeSolConca concatenation(word, word, word, word, unsigned long long, ListeSolConca);
-ListeSolConca Schroeppel_Shamir(word*, word, word*, word*, word*, word*, word*, word*, word*, word*, ListeSolConca);
+ListeSolConca Schroeppel_Shamir(word*, word, word*, word*, word*, word*, word*, ListeSolConca);
 
 //parametre.c
 bool choixDeA();

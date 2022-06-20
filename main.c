@@ -14,11 +14,11 @@
 -> chercher dans un fichier et saisir automatiquement le résultat dedans
 -> regarder si mpz_clear recommandé en fin de prog
 -> voir les "CHANGEMENT"
+-> optimisation appel de Creationtab avec tabGray
 */
 
 /*TODO Claire:
 -> TS2 à remplacer par T2S2 pour avoir des pairs sur les tableaux qu'on trie
--> Garder 1 seul TX qui correspond au Code de Gray (Nécessaire?)
 */
 
 #include "word.h"
@@ -54,11 +54,8 @@ int main(){
     word* T3S = malloc(sizeof(word)*tailleTableauS);
     word* T4S = malloc(sizeof(word)*tailleTableauS);
 
-    //Tableau contenant la les valeurs du code de gray (Inutile d'en avoir plusieurs)
-    word* T1x = malloc(sizeof(word)*tailleTableauS);
-    word* T2x = malloc(sizeof(word)*tailleTableauS);
-    word* T3x = malloc(sizeof(word)*tailleTableauS);
-    word* T4x = malloc(sizeof(word)*tailleTableauS);
+    //Tableau contenant les valeurs du code de gray
+    word* tabGray = malloc(sizeof(word)*tailleTableauS);
 
     //Initialisation
     for(int i=0;i<tailleTableauS;++i){
@@ -66,10 +63,7 @@ int main(){
         mpz_init(T2S[i]);
         mpz_init(T3S[i]);
         mpz_init(T4S[i]);
-        mpz_init(T1x[i]);
-        mpz_init(T2x[i]);
-        mpz_init(T3x[i]);
-        mpz_init(T4x[i]);
+        mpz_init(tabGray[i]);
     }
 
     ListeSolConca Solution = NULL;
@@ -77,7 +71,7 @@ int main(){
     word s; //TARGETSUM
     mpz_init_set_ui(s,TARGET);
 
-    Solution = Schroeppel_Shamir(ai,s,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x,Solution);
+    Solution = Schroeppel_Shamir(ai,s,T1S,T2S,T3S,T4S,tabGray,Solution);
     if(Solution == NULL){
         return 1;
     }
@@ -88,6 +82,6 @@ int main(){
 
 
     //Libération de la mémoire
-    liberer(ai,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x,Solution,tailleTableauS);
+    liberer(ai,T1S,T2S,T3S,T4S,tabGray,Solution,tailleTableauS);
     mpz_clear(s);
 }
