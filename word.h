@@ -52,10 +52,10 @@ typedef struct{
     unsigned long long l;
 } solution;
 
-typedef struct cellule{
-    triple valeur;
-    struct cellule* suivant;
-} *Liste3;
+// typedef struct cellule{
+//     triple valeur;
+//     struct cellule* suivant;
+// } *Liste3;
 
 typedef struct cellule2{
     solution valeur;
@@ -81,12 +81,12 @@ int verificationSol(word*, word, word);
 
 //modular_merge.c
 void triParDenombrement(word*, pair*, pair*, unsigned long long, unsigned long long);
-Liste3 join(Liste3, word*, word*, pair*, unsigned long long, unsigned long long, unsigned long long);
-ListeSol solver(ListeSol, Liste3, word*, word*, pair*, unsigned long long, word, unsigned long long, unsigned long long);
+triple* join(triple*, word*, word*, pair*, unsigned long long, unsigned long long, unsigned long long, unsigned long long*, unsigned long long*, unsigned long long*);
+ListeSol solver(ListeSol, triple*, word*, word*, pair*, unsigned long long, word, unsigned long long, unsigned long long, unsigned long long*);
 ListeSol Modular_merge(word*, word*, word*, word*, word, ListeSol);
+unsigned long long dichotomie(unsigned long long, pair*, unsigned long long);
 
 //liste.c
-Liste3 AjouterListe3(triple, Liste3);
 ListeSol AjouterListeSol(solution, ListeSol);
 ListeSolConca AjouterListeSolConca(word, ListeSolConca);
 

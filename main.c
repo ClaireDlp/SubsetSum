@@ -9,8 +9,6 @@
 //|___________________________________________________________________________________|//
 
 /* TODO:             
--> recherche plus efficace dans algo3
--> transformer S1 en tableau
 -> commenter
 -> changer M en mpz (voir si M en llu est opti)
 -> chercher dans un fichier et saisir automatiquement le résultat dedans
@@ -56,7 +54,7 @@ int main(){
     word* T3S = malloc(sizeof(word)*tailleTableauS);
     word* T4S = malloc(sizeof(word)*tailleTableauS);
 
-    //Tableau contenant 
+    //Tableau contenant la les valeurs du code de gray (Inutile d'en avoir plusieurs)
     word* T1x = malloc(sizeof(word)*tailleTableauS);
     word* T2x = malloc(sizeof(word)*tailleTableauS);
     word* T3x = malloc(sizeof(word)*tailleTableauS);
@@ -80,7 +78,9 @@ int main(){
     mpz_init_set_ui(s,TARGET);
 
     Solution = Schroeppel_Shamir(ai,s,T1S,T2S,T3S,T4S,T1x,T2x,T3x,T4x,Solution);
-
+    if(Solution == NULL){
+        return 1;
+    }
 
     //Verification de sol (while pour effectuer toutes les vérif)
 
