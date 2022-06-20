@@ -1,0 +1,3 @@
+dim: Var(n)
+a: Var(a1); Var(a2); ...; Var(an)
+t: Var(t)
