@@ -167,6 +167,7 @@ ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsig
                 unsigned long long T = mpz_get_ui(TargetSum)-mpz_get_ui(ol)-mpz_get_ui(T4S[j]);
                 mpz_set_ui(Tprime,T);
 
+		//Trier S1: puis dichotomie plutôt que rechercher.
                 for (unsigned long long k = 0; k < (*tailleS1); k++){
                     if(mpz_get_ui(S1[k].word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
                         solution s;
