@@ -26,14 +26,30 @@ void afficherA(word* ai){
 
 //Fonction qui permet de générer de façon aléatoire les éléments du vecteur a
 void generationAleaA(word* ai){
-    srand(time(NULL));
-    //int n = choixDeN();
+
+    word max;
+    mpz_init_set_ui(max,1);
+    mpz_mul_2exp(max,max,WORD_SIZE);
+
+    gmp_randstate_t state;
+    gmp_randinit_mt(state);
+
     for(int i = 0; i<WORD_SIZE; ++i){
-        //CHANGEMENT
-        //%(max-min+1) + min;
-        mpz_set_ui(ai[i],rand() % 10);//(1ULL<<WORD_SIZE));
+        mpz_urandomm(ai[i],state,max);
     }
+
     afficherA(ai);
+    gmp_randclear(state);
+    mpz_clear(max);
+
+
+    // srand(time(NULL));
+    // //int n = choixDeN();
+    // for(int i = 0; i<WORD_SIZE; ++i){
+    //     //CHANGEMENT
+    //     //%(max-min+1) + min;
+    //     mpz_set_ui(ai[i],rand() % (1ULL<<WORD_SIZE));
+    // }
 }
 
 //Fonction qui permet de chosir la taille de n
