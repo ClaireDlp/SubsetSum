@@ -92,8 +92,10 @@ ListeSolConca Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3
     SOL = Modular_merge(T1S, T2S, T3S, T4S, s, SOL);
 
     //On affiche les solutions, à partir de leur code de gray, concaténation à effectuer
-    //CHANGEMENT Faire afficher les résultats en code binaire classique
     if(SOL!=NULL){
+        system("clear");
+        afficherA(ai);
+        gmp_printf("\nLES SOLUTIONS POUR UN TARGET DE %Zd, SONT",s);
         while(SOL->suivant!=NULL){
             gmp_printf("\n %Zd %Zd %Zd %Zd",tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l]);
             Solution = concatenation(tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l],WORD_SIZE/4,Solution);
@@ -101,10 +103,13 @@ ListeSolConca Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3
         }
         gmp_printf("\n %Zd %Zd %Zd %Zd",tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l]);
         Solution = concatenation(tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l],WORD_SIZE/4,Solution);
+
     }
     else{
         Solution = NULL;
-        printf("\nPAS DE SOLUTIONS");
+        system("clear");
+        afficherA(ai);
+        gmp_printf("\nPAS DE SOLUTIONS POUR UN TARGET DE %Zd",s);
     }
     free(SOL);
     return Solution;

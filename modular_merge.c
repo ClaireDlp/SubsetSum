@@ -189,6 +189,16 @@ ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsig
     return SOL;
 }
 
+//Fonction qui permet d'afficher une idée approximative de l'avancement du processus en cours
+int chargement(unsigned long long pos, unsigned long long max, int* anc) {
+    int p = floor((pos*100)/max);
+    if(p > *anc){
+        system("clear");
+        printf("\nETAT : %d %%",p);
+    }
+    return p;
+}
+
 //Algorithme 3 Modular 4-Way merge routine
 ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum, ListeSol SOL){
 
@@ -231,6 +241,8 @@ ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSu
         mpz_init(S1[i].word);
     }
 
+    int anc = 1;
+
     for(unsigned long long om = 0; om < M; om++){
 
         tailleS1 = 0;
@@ -241,7 +253,7 @@ ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSu
         }
         //CHANGEMENT : TRIER LISTE S1 -> optimisation
         SOL = solver(SOL,S1,T3S,T4S,RES2,tailleTableauS,TargetSum,M,om,&tailleS1);
-       //printf("\n %llu",om);
+        anc = chargement(om,M,&anc);
     }
 
     //Libération de la mémoire

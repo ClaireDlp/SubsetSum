@@ -49,8 +49,8 @@ int main(int argc, char **argv){
 
 
     //On écrit dans le fichier les éléments de a générés
-        char a[255]="\na: ";
-        char tmp[255]="";
+        char a[2500]="\na: ";
+        char tmp[2500]="";
         mpz_t max,val;
         mpz_init(val);
         mpz_init_set_ui(max,1);

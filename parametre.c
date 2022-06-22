@@ -39,6 +39,7 @@ void generationAleaA(word* ai){
 
     for(int i = 0; i<WORD_SIZE; ++i){
         mpz_urandomm(ai[i],state,max);
+        printf("\n i : %d",i);
     }
 
     afficherA(ai);
@@ -82,13 +83,13 @@ void generationManuelle(word* ai){
     //LECTURE DU FICHIER
         FILE *Texte = NULL;
         //char* dimension = malloc(sizeof(char)*255);
-        char tmp[255] = "";
+        char tmp[2500] = "";
 
 
         char dimensionChar[255];
         int dimensionInt;
 
-        char aiChar[255];
+        char aiChar[2500];
 
         char destination[255];
         char* token;
@@ -114,7 +115,7 @@ void generationManuelle(word* ai){
             i = 0, j = 3;
             mpz_t elt;
             mpz_init(elt);
-            fgets(tmp,255,Texte);
+            fgets(tmp,2500,Texte);
             while(1){
                 if(tmp[j]>=48 && tmp[j] <=57){
                     aiChar[i] = tmp[j];

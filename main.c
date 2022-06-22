@@ -8,30 +8,25 @@
 //|for hard knapsacks                                                                 |//
 //|___________________________________________________________________________________|//
 
-/* TODO:             
--> commenter
--> changer M en mpz (voir si M en llu est opti)
--> chercher dans un fichier et saisir automatiquement le résultat dedans
--> regarder si mpz_clear recommandé en fin de prog
--> voir les "CHANGEMENT"
--> optimisation appel de Creationtab avec tabGray
-*/
-
-/*TODO Claire:
--> TS2 à remplacer par T2S2 pour avoir des pairs sur les tableaux qu'on trie
-*/
-
 #include "word.h"
-
 
 //valeur de la taille de n
 int WORD_SIZE = 8;
 
-//Valeur à trouver par sommation
-int TARGET = 10;
-
 
 int main(){
+
+    //Valeur à trouver par sommation
+    word TARGET;
+    char tmp[255]; int dim;
+    printf("\nQuel est le résultat de la sommation attendu ?\n");
+    scanf("%s",tmp);
+    mpz_init_set_str(TARGET,tmp,10);
+    //Choix de la dimension
+    printf("\nQuel est la dimension ?\n");
+    scanf("%d",&dim);
+    WORD_SIZE = dim;
+
 
     //On crée le tableau qui contiendra les éléments du vecteur a
     word* ai = malloc(sizeof(word)*WORD_SIZE);
@@ -76,10 +71,8 @@ int main(){
 
     ListeSolConca Solution = NULL;
 
-    word s; //TARGETSUM
-    mpz_init_set_ui(s,TARGET);
 
-    Solution = Schroeppel_Shamir(ai,s,T1S,T2S,T3S,T4S,tabGray,Solution);
+    Solution = Schroeppel_Shamir(ai,TARGET,T1S,T2S,T3S,T4S,tabGray,Solution);
     if(Solution == NULL){
         return 1;
     }
@@ -91,6 +84,16 @@ int main(){
 
     //Libération de la mémoire
     liberer(ai,T1S,T2S,T3S,T4S,tabGray,Solution,tailleTableauS);
-    mpz_clear(s);
+    mpz_clear(TARGET);
+
+
+    /* TODO:             
+    -> commenter
+    -> changer M en mpz (voir si M en llu est opti)
+    -> regarder si mpz_clear recommandé en fin de prog
+    -> voir les "CHANGEMENT"
+    -> optimisation appel de Creationtab avec tabGray
+    -> TS2 à remplacer par T2S2 pour avoir des pairs sur les tableaux qu'on trie
+    */
 
 }

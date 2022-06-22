@@ -5,11 +5,12 @@
 #include <time.h>
 
 
+
+//Représentation d'un mot
+typedef mpz_t word;
+
 //valeur de la taille de n
 extern int WORD_SIZE;
-
-//Valeur à trouver par sommation
-extern int TARGET;
 
 //Activer l'affichage
 #define DEBUG 0
@@ -18,8 +19,6 @@ typedef short bool;
 #define true 1
 #define false 0
 
-//Représentation d'un mot
-typedef mpz_t word;
 
 //Définition d'un type permettant de retourner plusieurs informations à la suite de l'utilisation de la fonction gray
 typedef struct{ 
@@ -84,6 +83,7 @@ int verificationSol(word*, word, word);
 void triParDenombrement(word*, pair*, pair*, unsigned long long, unsigned long long);
 triple* join(triple*, word*, word*, pair*, unsigned long long, unsigned long long, unsigned long long, unsigned long long*, unsigned long long*);
 ListeSol solver(ListeSol, triple*, word*, word*, pair*, unsigned long long, word, unsigned long long, unsigned long long, unsigned long long*);
+int chargement(unsigned long long, unsigned long long, int*);
 ListeSol Modular_merge(word*, word*, word*, word*, word, ListeSol);
 unsigned long long dichotomie(unsigned long long, pair*, unsigned long long);
 
