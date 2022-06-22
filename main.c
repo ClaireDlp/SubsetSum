@@ -23,10 +23,11 @@ int main(){
     scanf("%s",tmp);
     mpz_init_set_str(TARGET,tmp,10);
     //Choix de la dimension
-    printf("\nQuel est la dimension ?\n");
+    printf("\nQuel est la dimension ? 0 pour ignorer\n");
     scanf("%d",&dim);
-    WORD_SIZE = dim;
-
+    if(dim!=0){
+       WORD_SIZE = dim; 
+    }
 
     //On crée le tableau qui contiendra les éléments du vecteur a
     word* ai = malloc(sizeof(word)*WORD_SIZE);
