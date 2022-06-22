@@ -39,7 +39,6 @@ void generationAleaA(word* ai){
 
     for(int i = 0; i<WORD_SIZE; ++i){
         mpz_urandomm(ai[i],state,max);
-        printf("\n i : %d",i);
     }
 
     afficherA(ai);
