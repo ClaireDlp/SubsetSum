@@ -57,6 +57,7 @@ int main(int argc, char **argv){
         mpz_mul_2exp(max,max,dimensionInt);
         gmp_randstate_t state;
         gmp_randinit_mt(state);
+        gmp_randseed_ui(state, time(NULL));
 
         fputs(a,Texte);
 
@@ -117,4 +118,5 @@ int main(int argc, char **argv){
             mpz_clear(ai[i]);
         }
         free(ai);
+        fclose(Texte);
 }

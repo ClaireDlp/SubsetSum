@@ -23,6 +23,14 @@
 
 #include "word.h"
 
+
+//valeur de la taille de n
+int WORD_SIZE = 8;
+
+//Valeur à trouver par sommation
+int TARGET = 10;
+
+
 int main(){
 
     //On crée le tableau qui contiendra les éléments du vecteur a
@@ -39,7 +47,7 @@ int main(){
         generationAleaA(ai);
     }
     else{
-        //generationManuel();  //CHANGEMENT + chercher dans fichier et saisir le résultat dedans
+        generationManuelle(ai);
     }
     
     //On définit et déclare les variables utilent au bon déroulement du programme
@@ -78,10 +86,11 @@ int main(){
 
     //Verification de sol (while pour effectuer toutes les vérif)
 
-   // verificationSol(ai,s,Solution->valeur);
+    //verificationSol(ai,s,Solution->valeur);
 
 
     //Libération de la mémoire
     liberer(ai,T1S,T2S,T3S,T4S,tabGray,Solution,tailleTableauS);
     mpz_clear(s);
+
 }

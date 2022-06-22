@@ -240,7 +240,7 @@ ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSu
         }
         //CHANGEMENT : TRIER LISTE S1 -> optimisation
         SOL = solver(SOL,S1,T3S,T4S,RES2,tailleTableauS,TargetSum,M,om,&tailleS1);
-       printf("\n %llu",om);
+       //printf("\n %llu",om);
     }
 
     //Libération de la mémoire

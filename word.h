@@ -4,11 +4,12 @@
 #include <math.h>
 #include <time.h>
 
+
 //valeur de la taille de n
-#define WORD_SIZE 8
+extern int WORD_SIZE;
 
 //Valeur à trouver par sommation
-#define TARGET 10
+extern int TARGET;
 
 //Activer l'affichage
 #define DEBUG 0
@@ -99,3 +100,5 @@ ListeSolConca Schroeppel_Shamir(word*, word, word*, word*, word*, word*, word*, 
 bool choixDeA();
 void afficherA(word*);
 void generationAleaA(word*);
+int choixFichier(FILE*,char*);
+void generationManuelle(word*);
