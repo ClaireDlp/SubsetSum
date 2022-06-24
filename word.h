@@ -12,13 +12,9 @@ typedef mpz_t word;
 //valeur de la taille de n
 extern int WORD_SIZE;
 
-//Activer l'affichage
-#define DEBUG 0
-
 typedef short bool;
 #define true 1
 #define false 0
-
 
 //Définition d'un type permettant de retourner plusieurs informations à la suite de l'utilisation de la fonction gray
 typedef struct{ 
@@ -26,17 +22,17 @@ typedef struct{
     unsigned long long nPrec; // Représente le code de gray antérieur à l'appel de la fonction gray
     //CHANGEMENT : short suffit pour les deux variables qui précédent
     unsigned long long bitChangement; // Précise l'emplacement du bit modifié
-    unsigned long long signe; // Précise si il y a eu un retrait ou ajout de bit à 1
+    unsigned long long signe; // Précise s'il y a eu un retrait ou ajout de bit à 1
 } graytab;
 
-//Définition du type pair : Utile pour stoker en pair un mot et son indexe dans son tableau
+//Définition du type pair : Utile pour stocker en pair un mot et son indexe dans son tableau
 typedef struct
 {
     word word;
     unsigned long long indexe;
 }pair;
 
-//Définition du type pair : Utile pour stoker en pair un mot, et un couple d'indexe représentant 
+//Définition du type triple : Utile pour stocker en pair un mot, et un couple d'indexe représentant 
 //l'emplacement dans leur deux tableaux respectives des deux valeurs somme du mot
 typedef struct
 {
@@ -45,6 +41,8 @@ typedef struct
     unsigned long long j;
 }triple;
 
+//Définition du type solution : stocke les 4 indices représentant 
+//l'emplacement dans leur tableaux respectives des valeurs somme du mot
 typedef struct{
     unsigned long long i;
     unsigned long long j;
@@ -52,10 +50,7 @@ typedef struct{
     unsigned long long l;
 } solution;
 
-// typedef struct cellule{
-//     triple valeur;
-//     struct cellule* suivant;
-// } *Liste3;
+//Définition des différents type de liste
 
 typedef struct cellule2{
     solution valeur;
@@ -66,6 +61,8 @@ typedef struct cellule3{
     word valeur;
     struct cellule3* suivant;
 } *ListeSolConca;
+
+//Signatures des fonctions
 
 //gray.c
 unsigned long long nombreDe0gauche(unsigned long long);

@@ -72,7 +72,6 @@ int main(){
 
     ListeSolConca Solution = NULL;
 
-
     Solution = Schroeppel_Shamir(ai,TARGET,T1S,T2S,T3S,T4S,tabGray,Solution);
     if(Solution == NULL){
         return 1;
@@ -82,7 +81,6 @@ int main(){
 
     //verificationSol(ai,s,Solution->valeur);
 
-
     //Libération de la mémoire
     liberer(ai,T1S,T2S,T3S,T4S,tabGray,Solution,tailleTableauS);
     mpz_clear(TARGET);
@@ -90,11 +88,11 @@ int main(){
 
     /* TODO:             
     -> commenter
-    -> changer M en mpz (voir si M en llu est opti)
-    -> regarder si mpz_clear recommandé en fin de prog
     -> voir les "CHANGEMENT"
     -> optimisation appel de Creationtab avec tabGray
     -> TS2 à remplacer par T2S2 pour avoir des pairs sur les tableaux qu'on trie
+    -> for each dans la fonction merge, avec une dichotomie
+    -> regler le choix de dimension au debut du programme -> probleme à la lecture d'un fichier : faire un realloc
     */
 
 }

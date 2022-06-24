@@ -45,13 +45,6 @@ void CreationT(word* TS, word* tabGray, word* ai, unsigned long long place){
             tab.n=1;
         }
     }
-    if(DEBUG){
-        printf("\n CREATION DE T : ");
-        for(unsigned long long i = 0;i<(1<<(WORD_SIZE/4));++i){
-            gmp_printf("\nTS[%llu]=%Zd tabGray[%llu]=%Zd",i,TS[i],i,tabGray[i]);
-            //gmp_printf("\n%Zd",TS[i]);s
-        }
-    }  
 }
 
 //Fonction qui permet de concaténer 4 valeur word et affiche une solution de l'algorithme de Schroeppel-Shamir

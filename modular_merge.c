@@ -40,18 +40,33 @@ void triParDenombrement(word* TS, pair* T, pair* RES, unsigned long long M, unsi
         mpz_set(TS[i],TStrie[i]);
     }
 
-    if(DEBUG){
-        printf("\n-------------------------TRI FAIT");
-        for (unsigned long long i = 0; i < tailleT; i++){
-            gmp_printf("\n RES[i].word : %Zd   RES[i].indexe : %llu",RES[i].word,RES[i].indexe);
-            gmp_printf("\n tstrie[i] : %Zd",TStrie[i]);
-        }
-    }
-
     //Libération de l'espace libre
     liberation(TStrie,tailleT);
     free(C);
 }
+
+
+// void triParDenombrement2(triple* S,unsigned long long taille){
+
+//     unsigned long long* C = malloc(sizeof(unsigned long long)*taille);
+
+//     //triple* TStrie = malloc(sizeof(word)*taille);
+
+//     // for (unsigned long long i = 0; i < taille; ++i){
+//     //     mpz_init(TStrie[i].);
+//     // }
+
+//     for (unsigned long long i = 0; i < M; ++i){
+//         C[i] = 0;
+//     }
+
+//     for (unsigned long long i = 0; i < taille; ++i){
+//         C[mpz_get_ui(S[i].word)] = C[mpz_get_ui(S[i].word)] + 1;
+//     }
+
+
+// }
+
 
 
 //Vérifier la véracité de l'algo -> possible qu'il prenne pas l'indice le plus petit 
@@ -123,7 +138,34 @@ triple* join(triple* S1, word* T1S, word* T2S, pair* RES1, unsigned long long ta
                 t.j = RES1[j].indexe;
                 mpz_init(t.word);
                 mpz_add(t.word,T2S[j],ol);
-                S1[(*tailleS1)] = t;
+
+                //ici qu'on set en triant
+
+               // if(*tailleS1==0){
+                    S1[(*tailleS1)] = t;
+                // }
+                // else{
+                //     triple tmp1, tmp2;
+                //     mpz_inits(tmp1.word,tmp2.word);
+                //     for (unsigned long long a = 0; a < (*tailleS1); a++){
+                //         //Si (S1[a].word>t.word)
+                //         if(mpz_cmp(S1[a].word,t.word)>0){
+                //             tmp2 = t;
+                //             while(a<=(*tailleS1)){
+                //                 tmp1 = S1[a];
+                //                 S1[a] = tmp2;
+                //                 tmp2 = tmp1;
+                //                 a++;
+                //             }
+                //         }
+                //         else{
+                //             if(a+1 == (*tailleS1)){
+                //                 S1[a+1] = t;
+                //             }
+                //         }
+                //     }
+                //     mpz_clears(tmp1.word,tmp2.word,NULL);
+                // }
                 (*tailleS1)++;
             }
             else{
@@ -251,9 +293,14 @@ ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSu
             printf("\nErreur");
             return NULL;
         }
-        //CHANGEMENT : TRIER LISTE S1 -> optimisation
+       // CHANGEMENT : TRIER LISTE S1 -> optimisation
         SOL = solver(SOL,S1,T3S,T4S,RES2,tailleTableauS,TargetSum,M,om,&tailleS1);
         anc = chargement(om,M,&anc);
+        // printf("\n%llu",tailleS1);
+        // for (unsigned long long a = 0; a < tailleS1; a++)
+        // {
+        //     gmp_printf("\n val S1 : %Zd",S1[a].word);
+        // }
     }
 
     //Libération de la mémoire

@@ -1,7 +1,5 @@
 #include "word.h"
 
-
-
 //Fonctions permettant de connaître le code de gray de sa valeur parrallèle entière (inconvénient : besoin de connaître la valeur du code de gray précédent)
 
 //Fonction qui permet de chercher le nombre de bit à 0 à gauche du dernier bit à 1, et retourne ce résultat + 1
