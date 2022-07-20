@@ -1,7 +1,7 @@
 #include "word.h"
 
 //Fonction qui renvoie 1 si une solution donnée est vraie, 0 sinon
-//En paramètre : le tableau des élèments pouvant être sommé, la somme cherché, la solution proposé par le programme
+//En paramètre : le tableau des éléments pouvant être sommé, la somme cherché, la solution proposé par le programme
 int verificationSol(word* ai, word s, word Solution){
 
     gmp_printf("\nSol : %Zd",Solution);

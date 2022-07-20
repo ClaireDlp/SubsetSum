@@ -96,6 +96,6 @@ ListeSolConca Schroeppel_Shamir(word*, word, word*, word*, word*, word*, word*, 
 //parametre.c
 bool choixDeA();
 void afficherA(word*);
-void generationAleaA(word*);
+void generationAleaA(word**);
 int choixFichier(FILE*,char*);
-void generationManuelle(word*);
+void generationManuelle(word**);

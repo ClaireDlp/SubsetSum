@@ -16,35 +16,35 @@ int WORD_SIZE = 8;
 
 int main(){
 
-    //Valeur à trouver par sommation
     word TARGET;
     char tmp[255]; int dim;
-    printf("\nQuel est le résultat de la sommation attendu ?\n");
-    scanf("%s",tmp);
-    mpz_init_set_str(TARGET,tmp,10);
+
+
     //Choix de la dimension
     printf("\nQuel est la dimension ? 0 pour ignorer\n");
     scanf("%d",&dim);
     if(dim!=0){
        WORD_SIZE = dim; 
     }
+    //Valeur à trouver par sommation
+    printf("\nQuel est le résultat de la sommation attendu ?\n");
+    scanf("%s",tmp);
+    mpz_init_set_str(TARGET,tmp,10);
 
-    //On crée le tableau qui contiendra les éléments du vecteur a
-    word* ai = malloc(sizeof(word)*WORD_SIZE);
-    for(int i=0;i<WORD_SIZE;++i){
-        mpz_init(ai[i]);
-    }
+    //On déclare le tableau qui contiendra les éléments du vecteur a
+    word* ai = NULL; 
 
     //On génére les éléments du vecteur a
     bool choixDefDeA = true;
 
     choixDefDeA = choixDeA();
     if(choixDefDeA){
-        generationAleaA(ai);
+        generationAleaA(&ai);
     }
     else{
-        generationManuelle(ai);
+        generationManuelle(&ai);
     }
+
     
     //On définit et déclare les variables utilent au bon déroulement du programme
 
