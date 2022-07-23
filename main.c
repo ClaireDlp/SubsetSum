@@ -1,8 +1,9 @@
 //|___________________________________________________________________________________|//
 //|Informations :                                                                     |// 
 //|                                                                                   |// 
-//|Schroeppel-Shamir algorithm fonctionnel mais non optimale,                         |//
-//|en cours de réalisation                                                            |// 
+//|Schroeppel-Shamir algorithm fonctionnel pour une dimension résultant d'une         |// 
+//|puissance de 2, mais non optimale.                                                 |// 
+//|En cours de réalisation                                                            |// 
 //|                                                                                   |// 
 //|Source : Papier de Nick Howgrave-Graham et Antoine Joux, New generic algorithms    |//
 //|for hard knapsacks                                                                 |//
@@ -15,10 +16,10 @@ int WORD_SIZE = 8;
 
 
 int main(){
-
+    //Valeur recherché par sommation des éléments a
     word TARGET;
-    char tmp[255]; int dim;
 
+    char tmp[255]; int dim;
 
     //Choix de la dimension
     printf("\nQuel est la dimension ? 0 pour ignorer\n");
@@ -52,7 +53,7 @@ int main(){
     // (2^(WORD_SIZE/4))*4 cellules
     unsigned long long tailleTableauS = (1ULL<<(WORD_SIZE/4));
 
-    //tableaux contenant à eux 4 toutes les sommations possible des valeurs du vecteur a
+    //Tableaux contenant à eux 4 toutes les sommations possible des valeurs du vecteur a
     word* T1S = malloc(sizeof(word)*tailleTableauS);
     word* T2S = malloc(sizeof(word)*tailleTableauS);
     word* T3S = malloc(sizeof(word)*tailleTableauS);
@@ -78,7 +79,6 @@ int main(){
     }
 
     //Verification de sol (while pour effectuer toutes les vérif)
-
     //verificationSol(ai,s,Solution->valeur);
 
     //Libération de la mémoire
@@ -87,12 +87,10 @@ int main(){
 
 
     /* TODO:             
-    -> commenter
     -> voir les "CHANGEMENT"
     -> optimisation appel de Creationtab avec tabGray
     -> TS2 à remplacer par T2S2 pour avoir des pairs sur les tableaux qu'on trie
     -> for each dans la fonction merge, avec une dichotomie
     -> regler le choix de dimension au debut du programme -> probleme à la lecture d'un fichier : faire un realloc
     */
-
 }

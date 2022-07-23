@@ -83,6 +83,7 @@
         return 1;
     }
 
+    //Fonction qui permet de générer à partir d'un fichier les éléments du vecteur a
     void generationManuelle(word** ai){
         //LECTURE DU FICHIER
             FILE *Texte = NULL;
@@ -144,7 +145,7 @@
                             break;
                         }
                         n++;
-                        j = j+2; //on passe , et espace
+                        j = j+2; //on ignore , et espace
                         for (int k = 0; k < i; k++) //on vide les cellules remplies
                         {
                             aiChar[k]= 0;

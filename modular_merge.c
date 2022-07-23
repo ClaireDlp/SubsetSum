@@ -31,7 +31,6 @@ void triParDenombrement(word* TS, pair* T, pair* RES, unsigned long long M, unsi
         C[mpz_get_ui(T[i].word)] = C[mpz_get_ui(T[i].word)] -1;
     }
 
-
     //CHANGEMENT : OPTIMISER EN MEMOIRE : trie de TS
     for (unsigned long long i = 0; i < tailleT; ++i){
         mpz_set(TStrie[i],TS[RES[i].indexe]);
@@ -67,17 +66,18 @@ void triParDenombrement(word* TS, pair* T, pair* RES, unsigned long long M, unsi
 
 // }
 
-
-
+//Fonction qui permet de renvoyer l'indice de l'emplacement de la première apparition de ot dans le tableau RES
 //Vérifier la véracité de l'algo -> possible qu'il prenne pas l'indice le plus petit 
 unsigned long long dichotomie(unsigned long long ot, pair* RES, unsigned long long tailleTableauS){
     unsigned long long milieu/* = ot*tailleTableauS/4*/, debut = 0, fin=tailleTableauS-1;
     //valeur impossible (max indice : tailleTableauS*tailleTableauS-1)
     unsigned long long res = tailleTableauS*tailleTableauS;
+    unsigned long long val;
 
     while(debut < fin){
         milieu = (unsigned long long) (debut+fin)/2;
-        unsigned long long val = mpz_get_ui(RES[milieu].word);
+        val = mpz_get_ui(RES[milieu].word);
+     
         if(val==ot){
             res = milieu;
             fin = milieu-1;
@@ -90,7 +90,41 @@ unsigned long long dichotomie(unsigned long long ot, pair* RES, unsigned long lo
                 fin = milieu-1; 
             }
         }
-        //VERIFIER si on peut améliorer la syntaxe
+        //CHANGEMENT vérifier si on peut améliorer la syntaxe
+        if(debut==fin){
+            if(mpz_get_ui(RES[debut].word)==ot){
+                res = debut;
+            }
+            break;
+        }
+    }
+
+    return res;
+}
+//CHANGEMENT fusion de dicho2 et dicho
+unsigned long long dichotomie2(unsigned long long ot, triple* RES, unsigned long long tailleTableauS){
+    unsigned long long milieu/* = ot*tailleTableauS/4*/, debut = 0, fin=tailleTableauS-1;
+    //valeur impossible (max indice : tailleTableauS*tailleTableauS-1)
+    unsigned long long res = tailleTableauS*tailleTableauS;
+    unsigned long long val;
+
+    while(debut < fin){
+        milieu = (unsigned long long) (debut+fin)/2;
+        val = mpz_get_ui(RES[milieu].word);
+     
+        if(val==ot){
+            res = milieu;
+            fin = milieu-1;
+        }
+        else{
+            if(ot > val){
+                debut = milieu+1;
+            }
+            else{
+                fin = milieu-1; 
+            }
+        }
+        //CHANGEMENT vérifier si on peut améliorer la syntaxe
         if(debut==fin){
             if(mpz_get_ui(RES[debut].word)==ot){
                 res = debut;
@@ -102,11 +136,11 @@ unsigned long long dichotomie(unsigned long long ot, pair* RES, unsigned long lo
     return res;
 }
 
-
-
 triple* join(triple* S1, word* T1S, word* T2S, pair* RES1, unsigned long long tailleTableauS, unsigned long long M, unsigned long long om, unsigned long long* tailleS1, unsigned long long* nbReallocS1){
     word ol, tmp_w;
     mpz_inits(ol,tmp_w,NULL);
+    triple tmp1, tmp2;
+    mpz_inits(tmp1.word,tmp2.word);
     for(unsigned long long i = 0; i < tailleTableauS; i++){
         mpz_set(ol,T1S[i]);
         mpz_set_ui(tmp_w,om);
@@ -139,33 +173,29 @@ triple* join(triple* S1, word* T1S, word* T2S, pair* RES1, unsigned long long ta
                 mpz_init(t.word);
                 mpz_add(t.word,T2S[j],ol);
 
-                //ici qu'on set en triant
-
-               // if(*tailleS1==0){
+                //On set S1 en le triant
+                if(*tailleS1==0){
                     S1[(*tailleS1)] = t;
-                // }
-                // else{
-                //     triple tmp1, tmp2;
-                //     mpz_inits(tmp1.word,tmp2.word);
-                //     for (unsigned long long a = 0; a < (*tailleS1); a++){
-                //         //Si (S1[a].word>t.word)
-                //         if(mpz_cmp(S1[a].word,t.word)>0){
-                //             tmp2 = t;
-                //             while(a<=(*tailleS1)){
-                //                 tmp1 = S1[a];
-                //                 S1[a] = tmp2;
-                //                 tmp2 = tmp1;
-                //                 a++;
-                //             }
-                //         }
-                //         else{
-                //             if(a+1 == (*tailleS1)){
-                //                 S1[a+1] = t;
-                //             }
-                //         }
-                //     }
-                //     mpz_clears(tmp1.word,tmp2.word,NULL);
-                // }
+                }
+                else{
+                    for (unsigned long long a = 0; a < (*tailleS1); a++){
+                        //Si (S1[a].word>t.word)
+                        if(mpz_cmp(S1[a].word,t.word)>0){
+                            tmp2 = t;
+                            while(a<=(*tailleS1)){
+                                tmp1 = S1[a];
+                                S1[a] = tmp2;
+                                tmp2 = tmp1;
+                                a++;
+                            }
+                        }
+                        else{
+                            if(a+1 == (*tailleS1)){
+                                S1[a+1] = t;
+                            }
+                        }
+                    }
+                }
                 (*tailleS1)++;
             }
             else{
@@ -176,7 +206,7 @@ triple* join(triple* S1, word* T1S, word* T2S, pair* RES1, unsigned long long ta
     }
     return S1;
     //Liération de l'espace libre  
-    mpz_clears(ol,tmp_w,NULL);
+    mpz_clears(ol,tmp_w,tmp1.word,tmp2.word,NULL);
 }
 
 ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsigned long long tailleTableauS,word TargetSum, unsigned long long M, unsigned long long om, unsigned long long* tailleS1){
@@ -209,8 +239,10 @@ ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsig
                 unsigned long long T = mpz_get_ui(TargetSum)-mpz_get_ui(ol)-mpz_get_ui(T4S[j]);
                 mpz_set_ui(Tprime,T);
 
-		//Trier S1: puis dichotomie plutôt que rechercher.
-                for (unsigned long long k = 0; k < (*tailleS1); k++){
+                //Dichotomie qui va retourner premier indice recherché (càd dont la valeur de sa cellule = ot)
+                unsigned long long k = dichotomie2(ot,S1,tailleTableauS);
+
+                while (k < (*tailleS1)){
                     if(mpz_get_ui(S1[k].word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
                         solution s;
                         s.i = S1[k].i;
@@ -218,7 +250,11 @@ ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsig
                         s.k = i;
                         s.l = RES2[j].indexe;
                         SOL = AjouterListeSol(s,SOL);
-                    }  
+                    } 
+                    else{
+                        break;
+                    } 
+                    k++;
                 }
             }
             else{
@@ -244,8 +280,8 @@ int chargement(unsigned long long pos, unsigned long long max, int* anc) {
 //Algorithme 3 Modular 4-Way merge routine
 ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum, ListeSol SOL){
 
-    //CHANGEMENT
     unsigned long long M = (1ULL<<(WORD_SIZE/4));
+    //CHANGEMENT
     unsigned long long tailleTableauS = M;
 
     pair* T2S2 = malloc(sizeof(pair)*tailleTableauS);
@@ -293,7 +329,6 @@ ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSu
             printf("\nErreur");
             return NULL;
         }
-       // CHANGEMENT : TRIER LISTE S1 -> optimisation
         SOL = solver(SOL,S1,T3S,T4S,RES2,tailleTableauS,TargetSum,M,om,&tailleS1);
         anc = chargement(om,M,&anc);
         // printf("\n%llu",tailleS1);

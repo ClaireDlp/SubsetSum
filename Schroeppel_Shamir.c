@@ -84,7 +84,7 @@ ListeSolConca Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3
     ListeSol SOL = NULL;
     SOL = Modular_merge(T1S, T2S, T3S, T4S, s, SOL);
 
-    //On affiche les solutions, à partir de leur code de gray, concaténation à effectuer
+    //On affiche les solutions
     if(SOL!=NULL){
         system("clear");
         afficherA(ai);

@@ -83,6 +83,7 @@ ListeSol solver(ListeSol, triple*, word*, word*, pair*, unsigned long long, word
 int chargement(unsigned long long, unsigned long long, int*);
 ListeSol Modular_merge(word*, word*, word*, word*, word, ListeSol);
 unsigned long long dichotomie(unsigned long long, pair*, unsigned long long);
+unsigned long long dichotomie2(unsigned long long, triple*, unsigned long long);
 
 //liste.c
 ListeSol AjouterListeSol(solution, ListeSol);
