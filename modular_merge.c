@@ -240,7 +240,7 @@ ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsig
                 mpz_set_ui(Tprime,T);
 
                 //Dichotomie qui va retourner premier indice recherché (càd dont la valeur de sa cellule = ot)
-                unsigned long long k = dichotomie2(ot,S1,tailleTableauS);
+                unsigned long long k = dichotomie2(T,S1,tailleTableauS);
 
                 while (k < (*tailleS1)){
                     if(mpz_get_ui(S1[k].word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
