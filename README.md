@@ -15,6 +15,6 @@ Afin de bien utiliser le programme, vous pouvez soit :
  
  Pour lancer l'algorithme de Schroeppel-Shamir veuillez saisir la commande "**make**", puis "**./start**" dans votre terminal.
 
- Fonctionne actuellement uniquement dans le cas d'une dimension équivalente à une puissance de 2.
+ Fonctionne actuellement uniquement dans le cas d'une dimension divisible par 4.
  
  Il est nécessaire de disposer de la bibliothèque [GMP](https://gmplib.org)
