@@ -281,6 +281,11 @@ int chargement(unsigned long long pos, unsigned long long max, int* anc) {
 ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSum, ListeSol SOL){
 
     unsigned long long M = (1ULL<<(WORD_SIZE/4));
+
+    //Si WORD_SIZE n'est pas divisible par 4
+    if(WORD_SIZE%4!=0){
+        M = (1ULL<<(WORD_SIZE/4+1)); //Permet l'utilisation du programme sur une dimension non divisible par 4
+    }
     //CHANGEMENT
     unsigned long long tailleTableauS = M;
 

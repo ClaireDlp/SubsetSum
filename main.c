@@ -53,6 +53,11 @@ int main(){
     // (2^(WORD_SIZE/4))*4 cellules
     unsigned long long tailleTableauS = (1ULL<<(WORD_SIZE/4));
 
+    //Si WORD_SIZE n'est pas divisible par 4
+    if(WORD_SIZE%4!=0){
+        tailleTableauS++; //On augmente de 1 tailleTableauS afin de permettre l'utilisation du programme sur une dimension non divisible par 4
+    }
+
     //Tableaux contenant à eux 4 toutes les sommations possible des valeurs du vecteur a
     word* T1S = malloc(sizeof(word)*tailleTableauS);
     word* T2S = malloc(sizeof(word)*tailleTableauS);

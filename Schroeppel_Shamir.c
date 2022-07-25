@@ -3,6 +3,12 @@
 //Fonction qui permet de créer les différents tableaux utilisé dans l'algorithme de Schroeppel-Shamir algotithm
 void CreationT(word* TS, word* tabGray, word* ai, unsigned long long place){
 
+    //Si WORD_SIZE n'est pas divisible par 4
+    int indice = WORD_SIZE/4;
+    if(WORD_SIZE%4!=0){
+        indice++; //On augmente de 1 indice afin de permettre l'utilisation du programme sur une dimension non divisible par 4
+    }
+
     graytab tab; // n, nprec, bitchangement et pos ou neg
     tab.n = 0;
     tab.nPrec = 0;
@@ -12,31 +18,38 @@ void CreationT(word* TS, word* tabGray, word* ai, unsigned long long place){
     mpz_set_ui(tabGray[0],0);
     //mpz_set_ui(tabGray[i],0);
 
-    for(unsigned long long i = 0;i<(1ULL<<(WORD_SIZE/4));++i){
+    for(unsigned long long i = 0;i<(1ULL<<indice);++i){
+
         if(tab.n!=0){
-
-            // //On cherche l'information de quel bit a changé entre l'actuel représentation de gray, et l'ancienne (boucle précédente)
-            // bitChangement = n ^ nprec;
-
-            // //On cherche à connaître le bit associé à la valeur à soustraire ou ajouter
-            // bitChangement = emplacementBit(bitChangement);
 
             //On cherche l'actuel code de gray associé à l'entier i
             tab = gray(i,tab);
 
-            //Condition permettant de savoir s'il faut ajouter ou soustraire 
-            if(tab.signe==0){
-                //TS[i]= TS[i-1] +ai[bitChangement-1+place];
-                mpz_add(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
+            //Si WORD_SIZE n'est pas divisible par 4, on ajoute à T4S des entiers 0 comme éléments de ai
+            //Si tous les éléments ai ont été parcouru
+            if(tab.bitChangement-1+place >= WORD_SIZE && place == indice*3){
+                mpz_set(TS[i],TS[i-1]);
+
                 //tabGray[i] = n;
                 mpz_set_ui(tabGray[i],tab.n);
+
+                tab.nPrec = tab.n;
             }
             else{
-                mpz_sub(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
-                //tabGray[i] = n;
-                mpz_set_ui(tabGray[i],tab.n);
+                //Condition permettant de savoir s'il faut ajouter ou soustraire 
+                if(tab.signe==0){
+                    //TS[i]= TS[i-1] +ai[bitChangement-1+place];
+                    mpz_add(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
+                    //tabGray[i] = n;
+                    mpz_set_ui(tabGray[i],tab.n);
+                }
+                else{
+                    mpz_sub(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
+                    //tabGray[i] = n;
+                    mpz_set_ui(tabGray[i],tab.n);
+                }
+                tab.nPrec = tab.n;
             }
-            tab.nPrec = tab.n;
         }
         else{
             mpz_set_ui(TS[i],0);// i = 0
@@ -76,10 +89,34 @@ ListeSolConca concatenation(word w1, word w2, word w3, word w4, unsigned long lo
 //Schroeppel-Shamir algorithm
 ListeSolConca Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3S, word* T4S, word* tabGray, ListeSolConca Solution){
     
+    //Si WORD_SIZE n'est pas divisible par 4
+    int indice = WORD_SIZE/4;
+    if(WORD_SIZE%4!=0){
+        indice++; //On augmente de 1 indice afin de permettre l'utilisation du programme sur une dimension non divisible par 4
+    }
+    //CHANGEMENT : on peut faire une fonction qui construit tabGray, au lieu de le faire à chaque appel de CreationT
     CreationT(T1S,tabGray,ai,0);
-    CreationT(T2S,tabGray,ai,WORD_SIZE/4);
-    CreationT(T3S,tabGray,ai,WORD_SIZE/2);
-    CreationT(T4S,tabGray,ai,3*(WORD_SIZE/4));
+    printf("\n");
+    for(int k = 0; k < (1ULL<<indice); k++){
+        gmp_printf("%Zd ",T1S[k]);
+    }
+    CreationT(T2S,tabGray,ai,indice);
+    printf("\n");
+    for(int k = 0; k < (1ULL<<indice); k++){
+        gmp_printf("%Zd ",T2S[k]);
+    }
+    CreationT(T3S,tabGray,ai,indice*2);
+    printf("\n");
+    for(int k = 0; k < (1ULL<<indice); k++){
+        gmp_printf("%Zd ",T3S[k]);
+    }
+    CreationT(T4S,tabGray,ai,indice*3);
+    printf("\n");
+    for(int k = 0; k < (1ULL<<indice); k++){
+        gmp_printf("%Zd ",T4S[k]);
+    }
+
+
 
     ListeSol SOL = NULL;
     SOL = Modular_merge(T1S, T2S, T3S, T4S, s, SOL);
