@@ -60,27 +60,44 @@ void CreationT(word* TS, word* tabGray, word* ai, unsigned long long place){
     }
 }
 
-//Fonction qui permet de concaténer 4 valeur word et affiche une solution de l'algorithme de Schroeppel-Shamir
+//Fonction qui permet de concaténer 4 valeur entière et affiche une solution de l'algorithme de Schroeppel-Shamir
 //CHANGEMENT : valeur à retourner
-ListeSolConca concatenation(word w1, word w2, word w3, word w4, unsigned long long taille, ListeSolConca Solution){
-    word res, ww1, ww2, ww3;
-    mpz_inits(res,ww1,ww2,ww3,NULL);
+ListeSolConca concatenation(unsigned long long w1, unsigned long long w2, unsigned long long w3, unsigned long long w4, unsigned long long taille, ListeSolConca Solution){
+    unsigned long long res, ww1, ww2, ww3;
+    //word res, ww1, ww2, ww3;
+    //mpz_inits(res,ww1,ww2,ww3,NULL);
 
-    mpz_mul_2exp(ww1,w1,taille*3);
-    mpz_mul_2exp(ww2,w2,taille*2);
-    mpz_mul_2exp(ww3,w3,taille);
+    int decalage = 0, tmp;
+    if(WORD_SIZE%4!=0){
+        tmp= WORD_SIZE/4+1;
+        tmp = tmp*3; //Nombre d'éléments ai dans T1S, T2S et T3S
+        decalage = tmp/3 - (WORD_SIZE - tmp); //Nombre de 0 dans T4S non inclus dans ai
+    }
+
+    ww1= w1<<(taille*3-decalage);
+    ww2= w2<<(taille*2-decalage);
+    ww3= w3<<(taille-decalage);
+    //mpz_mul_2exp(ww1,w1,taille*3-decalage);
+    //mpz_mul_2exp(ww2,w2,taille*2-decalage);
+    //mpz_mul_2exp(ww3,w3,taille-decalage);
 
 
-    mpz_ior(res,ww1,ww2);
-    mpz_ior(res,res,ww3);
-    mpz_ior(res,res,w4);
+    res = ww1 | ww2;
+    res = res | ww3;
+    res = res | w4;
+    //mpz_ior(res,ww1,ww2);
+    //mpz_ior(res,res,ww3);
+    //mpz_ior(res,res,w4);
+
+    word res2;
+    mpz_init_set_ui(res2,res);
 
     //Ajout de la valeur concaténé dans une ListeSolConca, à terme, toutes les solutions y seront stockées
-    Solution = AjouterListeSolConca(res,Solution);
-    gmp_printf(" solution : %Zd",res);
+    Solution = AjouterListeSolConca(res2,Solution);
+    printf(" solution : %llu",res);
 
     //Libération de l'espace libre
-    mpz_clears(res,ww1,ww2,ww3,NULL);
+    mpz_clear(res2);
 
     return Solution;
 }
@@ -96,30 +113,12 @@ ListeSolConca Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3
     }
     //CHANGEMENT : on peut faire une fonction qui construit tabGray, au lieu de le faire à chaque appel de CreationT
     CreationT(T1S,tabGray,ai,0);
-    printf("\n");
-    for(int k = 0; k < (1ULL<<indice); k++){
-        gmp_printf("%Zd ",T1S[k]);
-    }
     CreationT(T2S,tabGray,ai,indice);
-    printf("\n");
-    for(int k = 0; k < (1ULL<<indice); k++){
-        gmp_printf("%Zd ",T2S[k]);
-    }
     CreationT(T3S,tabGray,ai,indice*2);
-    printf("\n");
-    for(int k = 0; k < (1ULL<<indice); k++){
-        gmp_printf("%Zd ",T3S[k]);
-    }
     CreationT(T4S,tabGray,ai,indice*3);
-    printf("\n");
-    for(int k = 0; k < (1ULL<<indice); k++){
-        gmp_printf("%Zd ",T4S[k]);
-    }
-
-
 
     ListeSol SOL = NULL;
-    SOL = Modular_merge(T1S, T2S, T3S, T4S, s, SOL);
+    SOL = Modular_merge(T1S, T2S, T3S, T4S, s, SOL, tabGray);
 
     //On affiche les solutions
     if(SOL!=NULL){
@@ -127,13 +126,16 @@ ListeSolConca Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3
         afficherA(ai);
         gmp_printf("\nLES SOLUTIONS POUR UN TARGET DE %Zd, SONT",s);
         while(SOL->suivant!=NULL){
-            gmp_printf("\n %Zd %Zd %Zd %Zd",tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l]);
-            Solution = concatenation(tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l],WORD_SIZE/4,Solution);
+            //gmp_printf("\n %Zd %Zd %Zd %Zd",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
+            gmp_printf("\n %llu %llu %llu %llu",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
+
+            Solution = concatenation(SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l,indice,Solution);
             SOL = SOL->suivant;
         }
-        gmp_printf("\n %Zd %Zd %Zd %Zd",tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l]);
-        Solution = concatenation(tabGray[SOL->valeur.i],tabGray[SOL->valeur.j],tabGray[SOL->valeur.k],tabGray[SOL->valeur.l],WORD_SIZE/4,Solution);
+        //gmp_printf("\n %Zd %Zd %Zd %Zd",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
+        gmp_printf("\n %llu %llu %llu %llu",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
 
+        Solution = concatenation(SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l,indice,Solution);
     }
     else{
         Solution = NULL;

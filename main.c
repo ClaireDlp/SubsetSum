@@ -55,7 +55,7 @@ int main(){
 
     //Si WORD_SIZE n'est pas divisible par 4
     if(WORD_SIZE%4!=0){
-        tailleTableauS++; //On augmente de 1 tailleTableauS afin de permettre l'utilisation du programme sur une dimension non divisible par 4
+        tailleTableauS = (1ULL<<(WORD_SIZE/4+1)); //On augmente de 1 tailleTableauS afin de permettre l'utilisation du programme sur une dimension non divisible par 4
     }
 
     //Tableaux contenant à eux 4 toutes les sommations possible des valeurs du vecteur a
