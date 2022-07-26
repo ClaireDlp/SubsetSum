@@ -1,8 +1,8 @@
 //|___________________________________________________________________________________|//
 //|Informations :                                                                     |// 
 //|                                                                                   |// 
-//|Schroeppel-Shamir algorithm fonctionnel pour une dimension divisible par 4,        |// 
-//|mais non optimale.                                                                 |// 
+//|Schroeppel-Shamir algorithm fonctionnel, mais non optimale.                        |// 
+//|                                                                                   |// 
 //|En cours de réalisation                                                            |// 
 //|                                                                                   |// 
 //|Source : Papier de Nick Howgrave-Graham et Antoine Joux, New generic algorithms    |//

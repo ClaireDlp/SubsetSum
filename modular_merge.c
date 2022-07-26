@@ -250,7 +250,6 @@ ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsig
                     while (k < (*tailleS1)){
                         if(mpz_get_ui(S1[k].word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
                             solution s;
-                            printf("\n SOL : %llu %llu %llu %llu %llu ",tailleTableauS,S1[k].i,S1[k].j,i,RES2[j].indexe);
                             s.i = inverse(mpz_get_ui(tabGray[S1[k].i]),nbEltParTab);
                             s.j = inverse(mpz_get_ui(tabGray[S1[k].j]),nbEltParTab);
                             s.k = inverse(mpz_get_ui(tabGray[i]),nbEltParTab);
