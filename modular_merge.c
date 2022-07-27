@@ -227,7 +227,7 @@ ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsig
             tailleTableauS4 = (1ULL<<nbElt);
         }
         else{
-            nbEltParTab = WORD_SIZE/4;
+            nbElt = nbEltParTab = WORD_SIZE/4;
             tailleTableauS4 = tailleTableauS;
         }
 
@@ -253,7 +253,7 @@ ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsig
                             s.i = inverse(mpz_get_ui(tabGray[S1[k].i]),nbEltParTab);
                             s.j = inverse(mpz_get_ui(tabGray[S1[k].j]),nbEltParTab);
                             s.k = inverse(mpz_get_ui(tabGray[i]),nbEltParTab);
-                            s.l = inverse(mpz_get_ui(tabGray[RES2[j].indexe]),nbEltParTab);
+                            s.l = inverse(mpz_get_ui(tabGray[RES2[j].indexe]),nbElt);
                             SOL = AjouterListeSol(s,SOL);
                         } 
                         else{
