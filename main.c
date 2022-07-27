@@ -84,7 +84,7 @@ int main(){
     }
 
     //Verification de sol (while pour effectuer toutes les vérif)
-    //verificationSol(ai,s,Solution->valeur);
+    //verificationSol(ai,TARGET,Solution->valeur,tabGray);
 
     //Libération de la mémoire
     liberer(ai,T1S,T2S,T3S,T4S,tabGray,Solution,tailleTableauS);

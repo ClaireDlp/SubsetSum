@@ -74,7 +74,7 @@ void liberationPair(pair*, unsigned long long);
 void liberer(word*, word*, word*, word*, word*, word*, ListeSolConca, unsigned long long);
 
 //verif.c
-int verificationSol(word*, word, word);
+int verificationSol(word*, word, word, word*);
 
 //modular_merge.c
 unsigned long long inverse(unsigned long long, int);
