@@ -1,7 +1,7 @@
 #include "word.h"
 
 //Fonction qui inverse un nombre binaire
-//Exemple 100 -> 001
+//Exemple 100 (4 base 10) -> 001 (1 base 10)
 unsigned long long inverse(unsigned long long nb, int lg){
     unsigned long long mask = 1<<(lg-1), rep = 0, ok = 0;
     for (int i = 0; i < lg; ++i){
@@ -16,7 +16,7 @@ unsigned long long inverse(unsigned long long nb, int lg){
 
 //Fonction de tri par denombrement
 void triParDenombrement(word* TS, pair* T, pair* RES, unsigned long long M, unsigned long long tailleT){
-    //CHANGEMENT
+
     unsigned long long* C = malloc(sizeof(unsigned long long)*M);
 
     word* TStrie = malloc(sizeof(word)*tailleT);
@@ -58,7 +58,7 @@ void triParDenombrement(word* TS, pair* T, pair* RES, unsigned long long M, unsi
 }
 
 //Fonction qui permet de renvoyer l'indice de l'emplacement de la première apparition de ot dans le tableau RES
-//Vérifier la véracité de l'algo -> possible qu'il prenne pas l'indice le plus petit 
+//CHANGEMENT Vérifier la véracité de l'algo -> possible qu'il ne prenne pas l'indice le plus petit
 unsigned long long dichotomie(unsigned long long ot, pair* RES, unsigned long long tailleTableauS){
     unsigned long long milieu/* = ot*tailleTableauS/4*/, debut = 0, fin=tailleTableauS-1;
     //valeur impossible (max indice : tailleTableauS*tailleTableauS-1)
@@ -114,7 +114,6 @@ unsigned long long dichotomie2(unsigned long long ot, triple* RES, unsigned long
                 fin = milieu-1; 
             }
         }
-        //CHANGEMENT vérifier si on peut améliorer la syntaxe
         if(debut==fin){
             if(mpz_get_ui(RES[debut].word)==ot){
                 res = debut;
@@ -138,10 +137,9 @@ triple* join(triple* S1, word* T1S, word* T2S, pair* RES1, unsigned long long ta
         unsigned long long ot = mpz_get_ui(tmp_w);
 
 
-        //dicho qui va retourner premier indice recherché (càd dont la valeur de sa cellule = ot)
+        //retourne le premier indice recherché (càd dont la valeur de sa cellule = ot)
         unsigned long long j = dichotomie(ot,RES1,tailleTableauS);
 
-        //for (unsigned j = 0; j < tailleTableauS; j++){
         while (j < tailleTableauS){
             if(mpz_get_ui(RES1[j].word)==ot){
                 //Si on dépasse la mémoire alloué à S1 alors
@@ -154,7 +152,7 @@ triple* join(triple* S1, word* T1S, word* T2S, pair* RES1, unsigned long long ta
                     }
                     for (unsigned long long k = tailleTableauS*(*nbReallocS1); k < (tailleTableauS+tailleTableauS*(*nbReallocS1)); ++k){
                         mpz_init(S1[k].word);
-                    }  
+                    }
                 }
                 triple t;
                 t.i = i;
@@ -210,11 +208,10 @@ ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsig
         // mpz_mod_ui(tmp_w,tmp_w,M);
         // unsigned long long ot = mpz_get_ui(tmp_w);
 
-        //CHANGEMENT
+        //CHANGEMENT vérifier si complexité de mpz_get_ui > 
         unsigned long long ot = (mpz_get_ui(TargetSum)-om-mpz_get_ui(ol)) % M;
 
         unsigned long long j = dichotomie(ot,RES2,tailleTableauS);
-
 
         //Si WORD_SIZE n'est pas divisible par 4, on gére T4S et les 0 à ne pas considérer
         int nbEltParTab, nbElt = tailleTableauS;
@@ -241,14 +238,15 @@ ListeSol solver(ListeSol SOL,triple* S1, word* T3S, word* T4S, pair* RES2, unsig
                     // mpz_sub(T,T,T4S[j]);
                     // mpz_init_set(Tprime,T);
 
+                    //CHANGEMENT vérifier si complexité de mpz_get_ui > 
                     unsigned long long T = mpz_get_ui(TargetSum)-mpz_get_ui(ol)-mpz_get_ui(T4S[j]);
                     mpz_set_ui(Tprime,T);
 
-                    //Dichotomie qui va retourner premier indice recherché (càd dont la valeur de sa cellule = ot)
+                    //retoune le premier indice recherché (càd dont la valeur de sa cellule = ot)
                     unsigned long long k = dichotomie2(T,S1,tailleTableauS);
 
                     while (k < (*tailleS1)){
-                        if(mpz_get_ui(S1[k].word)==mpz_get_ui(Tprime)){ //A optimiser (Ne pas transformer en ull...)
+                        if(mpz_get_ui(S1[k].word)==mpz_get_ui(Tprime)){
                             solution s;
                             s.i = inverse(mpz_get_ui(tabGray[S1[k].i]),nbEltParTab);
                             s.j = inverse(mpz_get_ui(tabGray[S1[k].j]),nbEltParTab);
@@ -292,7 +290,7 @@ ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSu
     if(WORD_SIZE%4!=0){
         M = (1ULL<<(WORD_SIZE/4+1)); //Permet l'utilisation du programme sur une dimension non divisible par 4
     }
-    //CHANGEMENT
+    //tailleTableauS <=> M
     unsigned long long tailleTableauS = M;
 
     pair* T2S2 = malloc(sizeof(pair)*tailleTableauS);
@@ -313,7 +311,7 @@ ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSu
     pair* RES2 = malloc(sizeof(pair)*tailleTableauS);
 
     //CHANGEMENT : Regarder si on peut éviter de déclarer T2S2 et T4S2 pour gain de mémoire et calcul
-    //TRIE : Répartition uniforme des éléments (à revoir fonction aléatoire)
+    //TRIE : Répartition uniforme des éléments
     triParDenombrement(T2S,T2S2,RES1,M,tailleTableauS);
     liberationPair(T2S2,tailleTableauS);
     triParDenombrement(T4S,T4S2,RES2,M,tailleTableauS);
@@ -334,7 +332,6 @@ ListeSol Modular_merge(word* T1S, word* T2S, word* T3S, word* T4S, word TargetSu
     int anc = 1;
 
     for(unsigned long long om = 0; om < M; om++){
-
         tailleS1 = 0;
         S1 = join(S1,T1S,T2S,RES1,tailleTableauS,M,om,&tailleS1,&nbReallocS1);
         if (S1 == NULL){

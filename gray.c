@@ -18,7 +18,7 @@ unsigned long long nombreDe0gauche(unsigned long long n){
     return i;
 }
 
-//Fonction qui renvoie le nombre de gray correspondant à partir, d'un nombre entier correspondant au code de gray associé, et le code de gray correcpondant à l'entier associé n-1
+//Fonction qui renvoie le nombre de gray correspondant à partir, d'un nombre entier correspondant au code de gray associé, et le code de gray correspondant à l'entier associé n-1
 graytab gray(unsigned long long n, graytab tab){
     unsigned long long Nb0 = nombreDe0gauche(n);
     unsigned long long temp = tab.nPrec >> (Nb0-1);

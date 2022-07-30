@@ -49,17 +49,7 @@
         afficherA(*ai);
         gmp_randclear(state);
         mpz_clear(max);
-
-
-        // srand(time(NULL));
-        // //int n = choixDeN();
-        // for(int i = 0; i<WORD_SIZE; ++i){
-        //     //CHANGEMENT
-        //     //%(max-min+1) + min;
-        //     mpz_set_ui(ai[i],rand() % (1ULL<<WORD_SIZE));
-        // }
     }
-
 
     //Fonction qui permet de choisir le fichier de lecture
     int choixFichier(FILE* Texte, char* destination){
@@ -87,7 +77,6 @@
     void generationManuelle(word** ai){
         //LECTURE DU FICHIER
             FILE *Texte = NULL;
-            //char* dimension = malloc(sizeof(char)*255);
             char tmp[2500] = "";
 
             char dimensionChar[255];
@@ -98,7 +87,6 @@
             char destination[255];
             char* token;
 
-            //CHANGEMENT : voir comment vérifier la présence d'un fichier au lieu d'ouvrir
             int retour = choixFichier(Texte,destination);
             Texte = fopen(destination, "r");
 
@@ -126,6 +114,7 @@
                 mpz_t elt;
                 mpz_init(elt);
                 fgets(tmp,2500,Texte);
+                //On lit les valeurs du vecteur ai
                 while(1){
                     if(tmp[j]>=48 && tmp[j] <=57){
                         aiChar[i] = tmp[j];
@@ -141,13 +130,12 @@
 
                         erreur = mpz_set_str((*ai)[n],aiChar,10);
                         if(erreur == -1){
-                            printf("\nerreur");
+                            printf("\n erreur");
                             break;
                         }
                         n++;
-                        j = j+2; //on ignore , et espace
-                        for (int k = 0; k < i; k++) //on vide les cellules remplies
-                        {
+                        j = j+2; //on ignore virgule et espace
+                        for (int k = 0; k < i; k++){ //on vide les cellules remplies
                             aiChar[k]= 0;
                         }
                         i = 0;
@@ -165,7 +153,7 @@
     //Fonction qui permet de chosir la taille de n
     // int choixDeN(){
     //     int n = 8;
-    //     printf("\nCombien d'éléments dans a souhaitez vous ? Attention la valeur saisie doit être une puissance de 2 et >= 8\n");
+    //     printf("\nCombien d'éléments dans a souhaitez vous ?\n");
     //     scanf("%d",&n);
     //     if(round(log2(n)) != log2(n) && n >=8){ //8 ou 4 ? 
     //         return choixDeN();

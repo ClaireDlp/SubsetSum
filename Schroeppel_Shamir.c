@@ -16,8 +16,9 @@ void CreationT(word* TS, word* tabGray, word* ai, unsigned long long place){
     tab.signe = 0;
 
     mpz_set_ui(tabGray[0],0);
-    //mpz_set_ui(tabGray[i],0);
 
+    //Construit le tableau TS et tabGray
+    //Pour TS on lui ajoute toutes les possibilités de sommation des éléments ai à partir de l'indice place, pour WORD_SIZE/4 éléments de ai
     for(unsigned long long i = 0;i<(1ULL<<indice);++i){
 
         if(tab.n!=0){
@@ -30,7 +31,6 @@ void CreationT(word* TS, word* tabGray, word* ai, unsigned long long place){
             if(tab.bitChangement-1+place >= WORD_SIZE && place == indice*3){
                 mpz_set(TS[i],TS[i-1]);
 
-                //tabGray[i] = n;
                 mpz_set_ui(tabGray[i],tab.n);
 
                 tab.nPrec = tab.n;
@@ -38,14 +38,13 @@ void CreationT(word* TS, word* tabGray, word* ai, unsigned long long place){
             else{
                 //Condition permettant de savoir s'il faut ajouter ou soustraire 
                 if(tab.signe==0){
-                    //TS[i]= TS[i-1] +ai[bitChangement-1+place];
                     mpz_add(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
-                    //tabGray[i] = n;
+
                     mpz_set_ui(tabGray[i],tab.n);
                 }
                 else{
                     mpz_sub(TS[i],TS[i-1],ai[tab.bitChangement-1+place]);
-                    //tabGray[i] = n;
+
                     mpz_set_ui(tabGray[i],tab.n);
                 }
                 tab.nPrec = tab.n;
@@ -61,7 +60,9 @@ void CreationT(word* TS, word* tabGray, word* ai, unsigned long long place){
 }
 
 //Fonction qui permet de concaténer 4 valeur entière et affiche une solution de l'algorithme de Schroeppel-Shamir
-//CHANGEMENT : valeur à retourner
+//C-à-d
+//Si w1 = 2, w2 = 0, w3 = 2 et w4 = 0 et taille = 2
+//Alors la solution <=> (10001000) base 2 <=> (136) base 10
 ListeSolConca concatenation(unsigned long long w1, unsigned long long w2, unsigned long long w3, unsigned long long w4, unsigned long long taille, ListeSolConca Solution){
     unsigned long long res, ww1, ww2, ww3;
     //word res, ww1, ww2, ww3;
@@ -126,13 +127,11 @@ ListeSolConca Schroeppel_Shamir(word* ai, word s, word* T1S, word* T2S, word* T3
         afficherA(ai);
         gmp_printf("\nLES SOLUTIONS POUR UN TARGET DE %Zd, SONT",s);
         while(SOL->suivant!=NULL){
-            //gmp_printf("\n %Zd %Zd %Zd %Zd",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
             gmp_printf("\n %llu %llu %llu %llu",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
 
             Solution = concatenation(SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l,indice,Solution);
             SOL = SOL->suivant;
         }
-        //gmp_printf("\n %Zd %Zd %Zd %Zd",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
         gmp_printf("\n %llu %llu %llu %llu",SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l);
 
         Solution = concatenation(SOL->valeur.i,SOL->valeur.j,SOL->valeur.k,SOL->valeur.l,indice,Solution);

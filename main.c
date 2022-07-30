@@ -14,7 +14,6 @@
 //valeur de la taille de n
 int WORD_SIZE = 8;
 
-
 int main(){
     //Valeur recherché par sommation des éléments a
     word TARGET;
@@ -53,6 +52,8 @@ int main(){
     // (2^(WORD_SIZE/4))*4 cellules
     unsigned long long tailleTableauS = (1ULL<<(WORD_SIZE/4));
 
+    ListeSolConca Solution = NULL;
+
     //Si WORD_SIZE n'est pas divisible par 4
     if(WORD_SIZE%4!=0){
         tailleTableauS = (1ULL<<(WORD_SIZE/4+1)); //On augmente de 1 tailleTableauS afin de permettre l'utilisation du programme sur une dimension non divisible par 4
@@ -76,8 +77,6 @@ int main(){
         mpz_init(tabGray[i]);
     }
 
-    ListeSolConca Solution = NULL;
-
     Solution = Schroeppel_Shamir(ai,TARGET,T1S,T2S,T3S,T4S,tabGray,Solution);
     if(Solution == NULL){
         return 1;
@@ -95,7 +94,5 @@ int main(){
     -> voir les "CHANGEMENT"
     -> optimisation appel de Creationtab avec tabGray
     -> TS2 à remplacer par T2S2 pour avoir des pairs sur les tableaux qu'on trie
-    -> for each dans la fonction merge, avec une dichotomie
-    -> regler le choix de dimension au debut du programme -> probleme à la lecture d'un fichier : faire un realloc
     */
 }

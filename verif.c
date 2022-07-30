@@ -2,7 +2,7 @@
 
 //Fonction qui renvoie 1 si une solution donnée est vraie, 0 sinon
 //En paramètre : le tableau des éléments pouvant être sommé, la somme cherché, la solution proposé par le programme
-int verificationSol(word* ai, word s, word Solution, word* tabGray){
+int verificationSol(word* ai, word s, word Solution){
 
     gmp_printf("\nSol : %Zd",Solution);
     
@@ -10,7 +10,7 @@ int verificationSol(word* ai, word s, word Solution, word* tabGray){
 
     //On cherche à partir de la solution donné, les indices correspondant à une valeur binaire, qui associe les sommation effectué pour donner la solution.
     //C-à-d
-    //Si a = (2,3,4,5,6,7,8,9) et Solution = (136) base 10 <=> (10001000) base 2. (pour somme cible = 8)
+    //Si ai = (2,3,4,5,6,7,8,9) et Solution = (136) base 10 <=> (10001000) base 2. (pour somme cible = 8)
     //Alors i1 = 2, i2 = 0, i3 = 2 et i4 = 0
 
 
@@ -24,9 +24,7 @@ int verificationSol(word* ai, word s, word Solution, word* tabGray){
         nbElt = nbEltParTab = WORD_SIZE/4;
     }
 
-
-
-
+    //On cherche les indices i1, i2, i3 et i4
 
     word tmp, mask;
     mpz_init(mask);
@@ -39,8 +37,6 @@ int verificationSol(word* ai, word s, word Solution, word* tabGray){
     mpz_fdiv_q_2exp(tmp,tmp,nbEltParTab+nbElt);
 
     mpz_set_ui(mask,(1<<nbEltParTab)-1);
-    //mpz_mul_2exp(mask,mask,nbEltParTab);
-    //mpz_sub_ui(mask,mask,1);
     mpz_and(tmp,tmp,mask);
     i2 = mpz_get_ui(tmp);
 
@@ -49,8 +45,6 @@ int verificationSol(word* ai, word s, word Solution, word* tabGray){
     mpz_fdiv_q_2exp(tmp,tmp,nbElt);
 
     mpz_set_ui(mask,(1<<nbEltParTab)-1);
-    //mpz_mul_2exp(mask,mask,WORD_SIZE/4);
-    //mpz_sub_ui(mask,mask,1);
     mpz_and(tmp,tmp,mask);
     i3 = mpz_get_ui(tmp);
 
@@ -58,22 +52,21 @@ int verificationSol(word* ai, word s, word Solution, word* tabGray){
     mpz_set(tmp,Solution);
 
     mpz_set_ui(mask,(1<<nbElt)-1);
-    //mpz_mul_2exp(mask,mask,WORD_SIZE/4);
-    //mpz_sub_ui(mask,mask,1);
     mpz_and(tmp,tmp,mask);
     i4 = mpz_get_ui(tmp);
 
     word rep;
     mpz_init(rep);
-    // mpz_add(rep,rep,ai[i1]);
-    // mpz_add(rep,rep,ai[i2]);
-    // mpz_add(rep,rep,ai[i3]);
-    // mpz_add(rep,rep,ai[i4]);
-
-    gmp_printf("\n%llu %llu %llu %llu",i1,i2,i3,i4);
-
 
     int mask2 = 1, tmp2;
+
+    //On associe les indices aux éléments qu'ils représentent dans ai et on les additionne
+    //C-à-d
+    //Si ai = (2,3,4,5,6,7,8,9). (pour somme cible = 8)
+    //Alors i1 = 2, i2 = 0, i3 = 2 et i4 = 0
+    //Et donc rep = 2 à la suite de la première condition if
+    //rep = 2 à la suite de la deuxième condition if
+    //rep = 8 à la suite de la troisième condition if
 
     //CHANGEMENT : Reduire à l'aide d'une fonction
     for (int i = 0; i < 4; ++i){
@@ -84,11 +77,9 @@ int verificationSol(word* ai, word s, word Solution, word* tabGray){
                 //Si <> de 0
                 if(tmp2){
                     mpz_add(rep,rep,ai[j]);
-                    printf("\n val : %d",j);
                 }
                 mask2 = mask2 <<1;
             }
-            gmp_printf("\ni : 0 = %Zd",rep);
         }
         else{
             if(i==1){
@@ -98,11 +89,9 @@ int verificationSol(word* ai, word s, word Solution, word* tabGray){
                     //Si <> de 0
                     if(tmp2){
                         mpz_add(rep,rep,ai[j]);
-                        printf("\n val : %d",j);
                     }
                     mask2 = mask2 <<1;
                 }
-                gmp_printf("\ni : 1 = %Zd",rep);
             }
             else{
                 if(i==2){
@@ -112,11 +101,9 @@ int verificationSol(word* ai, word s, word Solution, word* tabGray){
                         //Si <> de 0
                         if(tmp2){
                             mpz_add(rep,rep,ai[j]);
-                            printf("\n val : %d",j);
                         }
                         mask2 = mask2 <<1;
                     }
-                    gmp_printf("\ni : 3 = %Zd",rep);
                 }
                 else{
                     mask2 = 1;
@@ -125,23 +112,20 @@ int verificationSol(word* ai, word s, word Solution, word* tabGray){
                         //Si <> de 0
                         if(tmp2){
                             mpz_add(rep,rep,ai[j]);
-                            printf("\n val : %d",j);
                         }
                         mask2 = mask2 <<1;
                     }
-                    gmp_printf("\ni : 4 = %Zd",rep);
                 }
             }
         }
     }
 
+    //On vérifie si rep == s, si c'est le cas s est vérifié
     if(mpz_cmp(s,rep)==0){
-        gmp_printf("\nok  %Zd",rep);
         mpz_clears(mask,tmp,rep,NULL);
         return 1; //La solution est correct
     }
     else{
-        gmp_printf("\npas ok  %Zd",rep);
         mpz_clears(mask,tmp,rep,NULL);
         return 0; //La solution n'est pas correct
     }
